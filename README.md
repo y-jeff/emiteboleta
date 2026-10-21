@@ -53,6 +53,13 @@ python manage.py runserver
 
 Abre http://127.0.0.1:8000, crea una cuenta y completa tus datos de emisor.
 
+Para probar con datos de ejemplo, crea la cuenta demo (se reinicia cada vez que corres el comando):
+
+```bash
+python manage.py crear_demo
+# email: demo@emiteboleta.cl · clave: demo-emiteboleta
+```
+
 ### Tests
 
 ```bash
