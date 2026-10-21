@@ -1,0 +1,11 @@
+{% autoescape off %}Hola,
+
+Recibimos una solicitud para cambiar la clave de tu cuenta de EmiteBoleta ({{ email }}).
+
+Crea una nueva clave en este enlace:
+{{ protocol }}://{{ domain }}{% url 'cuentas:recuperar_confirmar' uidb64=uid token=token %}
+
+Si no fuiste tú, ignora este mensaje: tu clave actual sigue funcionando.
+
+— EmiteBoleta
+{% endautoescape %}

@@ -3,6 +3,7 @@ from decimal import Decimal
 from io import BytesIO
 
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -156,6 +157,11 @@ class VistasTests(TestCase):
         respuesta = self.client.get(reverse("boletas:dashboard"))
         self.assertRedirects(respuesta, f"{reverse('cuentas:login')}?next={reverse('boletas:dashboard')}")
 
+    def test_pagina_404_propia(self):
+        respuesta = self.client.get("/no-existe/")
+        self.assertEqual(respuesta.status_code, 404)
+        self.assertTemplateUsed(respuesta, "404.html")
+
     def test_landing_publica(self):
         self.client.logout()
         self.assertContains(self.client.get(reverse("home")), "Crear mi cuenta gratis")
@@ -198,6 +204,14 @@ class VistasTests(TestCase):
             self.assertEqual(self.client.get(reverse(f"boletas:{nombre}", args=[ajena.pk])).status_code, 404)
         self.assertEqual(self.client.post(reverse("boletas:eliminar", args=[ajena.pk])).status_code, 404)
         self.assertTrue(Boleta.objects.filter(pk=ajena.pk).exists())
+
+    def test_enlace_whatsapp_con_monto_y_datos_de_pago(self):
+        boleta = emitir(self.perfil, items=[(1, 25000)])
+        respuesta = self.client.get(boleta.get_absolute_url())
+        mensaje = respuesta.context["mensaje_whatsapp"]
+        self.assertIn("boleta N° 000001 por $25.000", mensaje)
+        self.assertIn("Cuenta RUT 12345678", mensaje)
+        self.assertContains(respuesta, "https://wa.me/?text=")
 
     def test_descargar_pdf(self):
         boleta = emitir(self.perfil)
@@ -288,3 +302,17 @@ class CuentasTests(TestCase):
             "email": "ANA@ejemplo.cl", "password1": "una-clave-larga-99", "password2": "una-clave-larga-99",
         })
         self.assertContains(respuesta, "Ya existe una cuenta")
+
+    def test_recuperar_clave(self):
+        crear_usuario("ana@ejemplo.cl")
+        respuesta = self.client.post(reverse("cuentas:recuperar"), {"email": "ana@ejemplo.cl"})
+        self.assertRedirects(respuesta, reverse("cuentas:recuperar_enviado"))
+        self.assertEqual(len(mail.outbox), 1)
+        enlace = next(linea for linea in mail.outbox[0].body.splitlines() if "/recuperar/" in linea)
+        formulario = self.client.get(enlace.replace("http://testserver", ""), follow=True)
+        self.assertTrue(formulario.context["validlink"])
+        respuesta = self.client.post(formulario.redirect_chain[-1][0], {
+            "new_password1": "otra-clave-larga-77", "new_password2": "otra-clave-larga-77",
+        })
+        self.assertRedirects(respuesta, reverse("cuentas:recuperar_listo"))
+        self.assertTrue(self.client.login(username="ana@ejemplo.cl", password="otra-clave-larga-77"))

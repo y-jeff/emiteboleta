@@ -116,6 +116,18 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Email (recuperación de contraseña). Sin EMAIL_HOST, los correos se imprimen en la consola.
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+if EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "EmiteBoleta <no-responder@localhost>")
+
 LOGIN_URL = "cuentas:login"
 LOGIN_REDIRECT_URL = "boletas:dashboard"
 LOGOUT_REDIRECT_URL = "home"

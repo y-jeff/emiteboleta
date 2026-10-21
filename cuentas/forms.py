@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, UserCreationForm
 
 from boletas.forms import INPUT
 
@@ -45,3 +45,18 @@ class LoginForm(AuthenticationForm):
 
     def clean_username(self):
         return self.cleaned_data["username"].strip().lower()
+
+
+class EstiloMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = INPUT
+
+
+class RecuperarForm(EstiloMixin, PasswordResetForm):
+    pass
+
+
+class NuevaClaveForm(EstiloMixin, SetPasswordForm):
+    pass

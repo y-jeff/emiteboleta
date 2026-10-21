@@ -1,0 +1,6 @@
+{% extends "cuentas/_auth.html" %}
+{% block title %}Recuperar clave{% endblock %}
+{% block heading %}Recupera tu clave{% endblock %}
+{% block subheading %}Te enviaremos un enlace a tu email para crear una nueva.{% endblock %}
+{% block boton %}Enviar enlace{% endblock %}
+{% block alternativa %}<a href="{% url 'cuentas:login' %}" class="font-semibold text-brand">Volver a ingresar</a>{% endblock %}

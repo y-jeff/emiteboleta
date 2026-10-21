@@ -3,4 +3,5 @@
 {% block heading %}Hola de nuevo{% endblock %}
 {% block subheading %}Ingresa para ver y emitir tus boletas.{% endblock %}
 {% block boton %}Ingresar{% endblock %}
+{% block extra %}<p class="text-right text-sm"><a href="{% url 'cuentas:recuperar' %}" class="font-medium text-slate-500 hover:text-brand">¿Olvidaste tu clave?</a></p>{% endblock %}
 {% block alternativa %}¿No tienes cuenta? <a href="{% url 'cuentas:registro' %}" class="font-semibold text-brand">Créala gratis</a>{% endblock %}
