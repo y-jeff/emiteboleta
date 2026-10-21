@@ -226,6 +226,25 @@ class VistasTests(TestCase):
         resumen = self.client.get(reverse("boletas:dashboard")).context["resumen"]
         self.assertEqual(resumen, {"emitido": 50000, "pagado": 20000, "pendiente": 30000, "cantidad": 2})
 
+    def test_resumen_anual(self):
+        hoy = date.today()
+        emitir(self.perfil, items=[(1, 100000)], retencion_pct=Decimal("10"))
+        emitir(self.perfil, items=[(1, 50000)], fecha=date(hoy.year - 1, 6, 1))
+        contexto = self.client.get(reverse("boletas:resumen")).context
+        self.assertEqual(contexto["totales"]["bruto"], 100000)
+        self.assertEqual(contexto["totales"]["retencion"], 10000)
+        self.assertEqual(contexto["anios"], [hoy.year, hoy.year - 1])
+        anterior = self.client.get(reverse("boletas:resumen"), {"anio": hoy.year - 1}).context
+        self.assertEqual(anterior["meses"][5]["bruto"], 50000)
+
+    def test_exportar_csv(self):
+        emitir(self.perfil, items=[(2, 15000)])
+        respuesta = self.client.get(reverse("boletas:exportar"))
+        contenido = respuesta.content.decode("utf-8-sig")
+        self.assertIn("attachment", respuesta["Content-Disposition"])
+        self.assertTrue(contenido.startswith("N°;Fecha;Cliente"))
+        self.assertIn("Cliente SpA;;Servicio;30000;0;0;30000;Pendiente", contenido)
+
     def test_buscar(self):
         emitir(self.perfil)
         respuesta = self.client.get(reverse("boletas:lista"), {"q": "cliente", "estado": "pendiente"})
