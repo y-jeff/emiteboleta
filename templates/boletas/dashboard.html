@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load boletas_extras %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <p class="text-sm text-slate-500">{{ hoy|mes_anio }}</p>
+    <h1 class="text-2xl font-bold tracking-tight">Hola{% if perfil.nombre %}, {{ perfil.nombre|truncatewords:2 }}{% endif %}</h1>
+  </div>
+  <a href="{% url 'boletas:crear' %}" class="hidden rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark sm:inline-block md:hidden">+ Nueva boleta</a>
+</div>
+
+{% if not perfil.completo %}
+  <a href="{% url 'boletas:perfil' %}" class="mt-5 flex items-center justify-between gap-4 rounded-2xl border border-brand/20 bg-brand-light p-4">
+    <div>
+      <p class="font-semibold text-brand-dark">Completa tus datos de emisor</p>
+      <p class="text-sm text-slate-600">Nombre, RUT y logo. Se usarán en todas tus boletas.</p>
+    </div>
+    <span class="shrink-0 text-xl text-brand">&rarr;</span>
+  </a>
+{% endif %}
+
+<section class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+  <div class="col-span-2 rounded-2xl bg-brand p-5 text-white shadow-sm lg:col-span-1">
+    <p class="text-sm text-blue-100">Emitido este mes</p>
+    <p class="mt-1 text-3xl font-bold tabular">{{ resumen.emitido|clp }}</p>
+    <p class="mt-1 text-xs text-blue-200">{{ resumen.cantidad }} boleta{{ resumen.cantidad|pluralize }}</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-4">
+    <p class="flex items-center gap-1.5 text-sm text-slate-500"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Pagado</p>
+    <p class="mt-1 text-xl font-bold tabular">{{ resumen.pagado|clp }}</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-4">
+    <p class="flex items-center gap-1.5 text-sm text-slate-500"><span class="h-2 w-2 rounded-full bg-amber-500"></span>Por cobrar</p>
+    <p class="mt-1 text-xl font-bold tabular">{{ resumen.pendiente|clp }}</p>
+  </div>
+  <div class="hidden rounded-2xl border border-slate-200 bg-white p-4 lg:block">
+    <p class="text-sm text-slate-500">Próxima boleta</p>
+    <p class="mt-1 text-xl font-bold tabular">N° {{ perfil.siguiente_numero|stringformat:"06d" }}</p>
+  </div>
+</section>
+
+<div class="mt-8 grid gap-6 lg:grid-cols-2">
+  <section>
+    <h2 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Por cobrar</h2>
+    <div class="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      {% for boleta in por_cobrar %}
+        {% include "boletas/_fila.html" %}
+      {% empty %}
+        <p class="px-4 py-6 text-center text-sm text-slate-500">Nada pendiente. ¡Todo cobrado! 🎉</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <div class="mb-2 flex items-center justify-between">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Últimas emitidas</h2>
+      <a href="{% url 'boletas:lista' %}" class="text-sm font-semibold text-brand">Ver todas</a>
+    </div>
+    <div class="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      {% for boleta in recientes %}
+        {% include "boletas/_fila.html" %}
+      {% empty %}
+        <div class="px-4 py-10 text-center">
+          <p class="font-semibold">Aún no emites boletas</p>
+          <p class="mt-1 text-sm text-slate-500">Tu primera boleta está a un minuto.</p>
+          <a href="{% url 'boletas:crear' %}" class="mt-4 inline-block rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white">Emitir mi primera boleta</a>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

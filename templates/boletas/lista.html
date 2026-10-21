@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Mis boletas{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-bold tracking-tight">Mis boletas</h1>
+  <a href="{% url 'boletas:crear' %}" class="hidden rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark sm:inline-block">+ Nueva</a>
+</div>
+
+<form method="get" class="mt-4 space-y-3">
+  <input type="search" name="q" value="{{ q }}" placeholder="Buscar por cliente, RUT, N° o servicio"
+         class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20">
+  <div class="flex gap-2 text-sm font-medium">
+    <a href="?q={{ q|urlencode }}" class="rounded-full px-3.5 py-1.5 {% if not estado %}bg-slate-900 text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Todas</a>
+    <a href="?q={{ q|urlencode }}&estado=pendiente" class="rounded-full px-3.5 py-1.5 {% if estado == 'pendiente' %}bg-slate-900 text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Pendientes</a>
+    <a href="?q={{ q|urlencode }}&estado=pagada" class="rounded-full px-3.5 py-1.5 {% if estado == 'pagada' %}bg-slate-900 text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Pagadas</a>
+  </div>
+  {% if estado %}<input type="hidden" name="estado" value="{{ estado }}">{% endif %}
+</form>
+
+<div class="mt-4 divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+  {% for boleta in pagina %}
+    {% include "boletas/_fila.html" %}
+  {% empty %}
+    <p class="px-4 py-10 text-center text-sm text-slate-500">
+      {% if q or estado %}No hay boletas que coincidan con tu búsqueda.{% else %}Aún no has emitido boletas.{% endif %}
+    </p>
+  {% endfor %}
+</div>
+
+{% if pagina.has_other_pages %}
+  <nav class="mt-4 flex items-center justify-between text-sm">
+    {% if pagina.has_previous %}
+      <a href="?q={{ q|urlencode }}&estado={{ estado }}&page={{ pagina.previous_page_number }}" class="rounded-lg bg-white px-3 py-2 font-medium ring-1 ring-slate-200">&larr; Anterior</a>
+    {% else %}<span></span>{% endif %}
+    <span class="text-slate-500">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}
+      <a href="?q={{ q|urlencode }}&estado={{ estado }}&page={{ pagina.next_page_number }}" class="rounded-lg bg-white px-3 py-2 font-medium ring-1 ring-slate-200">Siguiente &rarr;</a>
+    {% else %}<span></span>{% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

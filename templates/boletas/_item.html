@@ -1,0 +1,25 @@
+<div data-item class="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
+  {{ f.id }}
+  <div class="hidden">{{ f.DELETE }}</div>
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_6rem_9rem]">
+    <div class="col-span-2 sm:col-span-1">
+      <label for="{{ f.descripcion.id_for_label }}" class="mb-1 block text-xs font-medium text-slate-600">Descripción</label>
+      {{ f.descripcion }}
+      {% for e in f.descripcion.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}
+    </div>
+    <div>
+      <label for="{{ f.cantidad.id_for_label }}" class="mb-1 block text-xs font-medium text-slate-600">Cantidad</label>
+      {{ f.cantidad }}
+      {% for e in f.cantidad.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}
+    </div>
+    <div>
+      <label for="{{ f.precio_unitario.id_for_label }}" class="mb-1 block text-xs font-medium text-slate-600">Precio ($)</label>
+      {{ f.precio_unitario }}
+      {% for e in f.precio_unitario.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}
+    </div>
+  </div>
+  <div class="mt-2 flex items-center justify-between text-sm">
+    <button type="button" data-quitar class="font-medium text-red-600">Quitar</button>
+    <span class="font-semibold tabular text-slate-700" data-total>$0</span>
+  </div>
+</div>

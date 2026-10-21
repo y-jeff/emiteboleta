@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load boletas_extras %}
+{% block title %}{% if es_nueva %}Nueva boleta{% else %}Editar boleta N° {{ boleta.numero_fmt }}{% endif %}{% endblock %}
+{% block content %}
+<a href="{% if es_nueva %}{% url 'boletas:dashboard' %}{% else %}{{ boleta.get_absolute_url }}{% endif %}" class="text-sm font-medium text-slate-500">&larr; Volver</a>
+<div class="mt-3 flex items-baseline justify-between gap-3">
+  <h1 class="text-2xl font-bold tracking-tight">{% if es_nueva %}Nueva boleta{% else %}Editar boleta{% endif %}</h1>
+  <span class="rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-semibold text-slate-600 tabular">
+    N° {% if es_nueva %}{{ proximo_numero }}{% else %}{{ boleta.numero_fmt }}{% endif %}
+  </span>
+</div>
+
+<form method="post" class="mt-5 space-y-5" id="form-boleta" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors or items.non_form_errors %}
+    <div class="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+      {{ form.non_field_errors }}{{ items.non_form_errors }}
+    </div>
+  {% endif %}
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <h2 class="font-semibold">Cliente</h2>
+      {% if clientes %}
+        <select id="cliente-frecuente" class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-700">
+          <option value="">Elegir cliente anterior…</option>
+          {% for c in clientes %}<option value="{{ forloop.counter0 }}">{{ c.receptor_nombre }}</option>{% endfor %}
+        </select>
+      {% endif %}
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% include "_campo.html" with campo=form.receptor_nombre clase="sm:col-span-2" %}
+      {% include "_campo.html" with campo=form.receptor_rut %}
+      {% include "_campo.html" with campo=form.receptor_email %}
+      {% include "_campo.html" with campo=form.receptor_direccion clase="sm:col-span-2" %}
+    </div>
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+    <h2 class="mb-4 font-semibold">Servicios</h2>
+    {{ items.management_form }}
+    <div id="items" class="space-y-3">
+      {% for item_form in items %}
+        {% include "boletas/_item.html" with f=item_form %}
+      {% endfor %}
+    </div>
+    <template id="item-vacio">{% include "boletas/_item.html" with f=items.empty_form %}</template>
+    <button type="button" id="agregar-item" class="mt-3 w-full rounded-xl border-2 border-dashed border-slate-300 py-3 text-sm font-semibold text-slate-600 hover:border-brand hover:text-brand">
+      + Agregar otro servicio
+    </button>
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+    <h2 class="mb-4 font-semibold">Detalles</h2>
+    <div class="grid gap-4 sm:grid-cols-3">
+      {% include "_campo.html" with campo=form.fecha %}
+      {% include "_campo.html" with campo=form.retencion_pct %}
+      {% include "_campo.html" with campo=form.estado %}
+      {% include "_campo.html" with campo=form.notas clase="sm:col-span-3" %}
+    </div>
+  </section>
+
+  {# Barra de total fija abajo en celular, justo sobre la navegación #}
+  <div class="sticky bottom-20 z-20 rounded-2xl bg-slate-900 p-4 text-white shadow-xl md:bottom-4">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <p class="text-xs text-slate-400">Total a pagar <span id="detalle-retencion"></span></p>
+        <p class="text-2xl font-bold tabular" id="total">$0</p>
+      </div>
+      <button class="rounded-xl bg-white px-5 py-3 font-semibold text-slate-900 hover:bg-slate-100">
+        {% if es_nueva %}Emitir boleta{% else %}Guardar{% endif %}
+      </button>
+    </div>
+  </div>
+</form>
+{{ clientes|json_script:"clientes-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const contenedor = document.getElementById("items");
+  const plantilla = document.getElementById("item-vacio");
+  const totalForms = document.getElementById("id_items-TOTAL_FORMS");
+  const retencion = document.getElementById("id_retencion_pct");
+  const clp = (n) => "$" + Math.round(n).toLocaleString("es-CL");
+
+  function recalcular() {
+    let subtotal = 0;
+    contenedor.querySelectorAll("[data-item]").forEach((fila) => {
+      const borrado = fila.querySelector('input[name$="-DELETE"]');
+      if (borrado && borrado.checked) return;
+      const cant = parseFloat(fila.querySelector("[data-cantidad]").value.replace(",", ".")) || 0;
+      const precio = parseFloat(fila.querySelector("[data-precio]").value) || 0;
+      const total = Math.round(cant * precio);
+      fila.querySelector("[data-total]").textContent = clp(total);
+      subtotal += total;
+    });
+    const pct = parseFloat((retencion.value || "0").replace(",", ".")) || 0;
+    const ret = Math.round(subtotal * pct / 100);
+    document.getElementById("total").textContent = clp(subtotal - ret);
+    document.getElementById("detalle-retencion").textContent = ret ? `(retención ${pct}%: -${clp(ret)})` : "";
+  }
+
+  function visibles() {
+    return [...contenedor.querySelectorAll("[data-item]")].filter((f) => !f.hidden);
+  }
+
+  function actualizarBotonesQuitar() {
+    const filas = visibles();
+    filas.forEach((f) => (f.querySelector("[data-quitar]").hidden = filas.length === 1));
+  }
+
+  document.getElementById("agregar-item").addEventListener("click", () => {
+    const indice = parseInt(totalForms.value, 10);
+    const html = plantilla.innerHTML.replace(/__prefix__/g, indice);
+    contenedor.insertAdjacentHTML("beforeend", html);
+    totalForms.value = indice + 1;
+    const nueva = contenedor.lastElementChild;
+    nueva.querySelector("[data-cantidad]").value = "1";
+    nueva.querySelector("input").focus();
+    actualizarBotonesQuitar();
+    recalcular();
+  });
+
+  contenedor.addEventListener("click", (e) => {
+    const boton = e.target.closest("[data-quitar]");
+    if (!boton) return;
+    const fila = boton.closest("[data-item]");
+    const borrar = fila.querySelector('input[name$="-DELETE"]');
+    if (borrar) borrar.checked = true;
+    fila.hidden = true;
+    actualizarBotonesQuitar();
+    recalcular();
+  });
+
+  document.getElementById("form-boleta").addEventListener("input", recalcular);
+
+  const selector = document.getElementById("cliente-frecuente");
+  if (selector) {
+    const clientes = JSON.parse(document.getElementById("clientes-data").textContent);
+    selector.addEventListener("change", () => {
+      const c = clientes[selector.value];
+      if (!c) return;
+      for (const campo of ["receptor_nombre", "receptor_rut", "receptor_email", "receptor_direccion"]) {
+        document.getElementById("id_" + campo).value = c[campo] || "";
+      }
+    });
+  }
+
+  // Filas marcadas para borrar que vuelven con errores de validación
+  contenedor.querySelectorAll('input[name$="-DELETE"]:checked').forEach((i) => (i.closest("[data-item]").hidden = true));
+  actualizarBotonesQuitar();
+  recalcular();
+})();
+</script>
+{% endblock %}

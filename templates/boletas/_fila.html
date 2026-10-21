@@ -1,0 +1,15 @@
+{% load boletas_extras %}
+<a href="{{ boleta.get_absolute_url }}" class="flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-slate-50">
+  <div class="min-w-0">
+    <p class="truncate font-semibold">{{ boleta.receptor_nombre }}</p>
+    <p class="text-xs text-slate-500">N° {{ boleta.numero_fmt }} · {{ boleta.fecha|date:"d M Y" }}</p>
+  </div>
+  <div class="shrink-0 text-right">
+    <p class="font-semibold tabular">{{ boleta.total|clp }}</p>
+    {% if boleta.pagada %}
+      <span class="inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">Pagada</span>
+    {% else %}
+      <span class="inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">Pendiente</span>
+    {% endif %}
+  </div>
+</a>

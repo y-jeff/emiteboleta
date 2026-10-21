@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Mis datos{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold tracking-tight">Mis datos de emisor</h1>
+<p class="mt-1 text-sm text-slate-500">Se completan una vez y aparecen en todas tus boletas.</p>
+
+<form method="post" enctype="multipart/form-data" class="mt-5 space-y-5" novalidate>
+  {% csrf_token %}
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+    <h2 class="mb-4 font-semibold">Identificación</h2>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% include "_campo.html" with campo=form.nombre clase="sm:col-span-2" %}
+      {% include "_campo.html" with campo=form.rut %}
+      {% include "_campo.html" with campo=form.giro %}
+      {% include "_campo.html" with campo=form.direccion clase="sm:col-span-2" %}
+      {% include "_campo.html" with campo=form.email %}
+      {% include "_campo.html" with campo=form.telefono %}
+    </div>
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+    <h2 class="mb-4 font-semibold">Cobro</h2>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {% include "_campo.html" with campo=form.datos_pago clase="sm:col-span-2" %}
+      {% include "_campo.html" with campo=form.siguiente_numero %}
+      {% include "_campo.html" with campo=form.retencion_por_defecto %}
+    </div>
+    <p class="mt-3 text-xs text-slate-500">
+      La retención es opcional: úsala si tu cliente retiene impuesto por ti (por ejemplo, la retención de honorarios vigente del año).
+    </p>
+  </section>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+    <h2 class="mb-4 font-semibold">Apariencia del PDF</h2>
+    <div class="flex flex-col gap-5 sm:flex-row">
+      <div class="flex-1">
+        <p class="mb-1.5 text-sm font-medium text-slate-700">Logo</p>
+        {% if perfil.tiene_logo %}
+          <div class="mb-3 flex items-center gap-4">
+            <img src="{% url 'boletas:logo' %}?v={{ perfil.pk }}{{ perfil.logo|length }}" alt="Tu logo" class="h-14 max-w-[10rem] rounded-lg bg-slate-50 object-contain p-1 ring-1 ring-slate-200">
+            <label class="flex items-center gap-2 text-sm text-slate-600">{{ form.quitar_logo }} Quitar logo</label>
+          </div>
+        {% endif %}
+        <input type="file" name="logo_archivo" id="id_logo_archivo" accept="image/png,image/jpeg"
+               class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-light file:px-3 file:py-2 file:font-semibold file:text-brand">
+        <p class="mt-1 text-xs text-slate-500">PNG o JPG, máximo 1 MB. Idealmente horizontal y con fondo transparente.</p>
+        {% for e in form.logo_archivo.errors %}<p class="mt-1 text-sm text-red-600">{{ e }}</p>{% endfor %}
+      </div>
+      <fieldset class="flex-1">
+        <legend class="mb-1.5 text-sm font-medium text-slate-700">Color del documento</legend>
+        <div class="flex flex-wrap gap-3">
+          {% for opcion in form.color %}
+            <label class="cursor-pointer" title="{{ opcion.choice_label }}">
+              <input type="radio" name="{{ opcion.data.name }}" value="{{ opcion.data.value }}" class="peer sr-only" {% if opcion.data.selected %}checked{% endif %}>
+              <span class="block h-10 w-10 rounded-full ring-2 ring-transparent ring-offset-2 peer-checked:ring-slate-900 peer-focus-visible:ring-slate-400" style="background: {{ opcion.data.value }}"></span>
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    </div>
+  </section>
+
+  <button class="w-full rounded-xl bg-brand py-3.5 font-semibold text-white shadow-sm hover:bg-brand-dark sm:w-auto sm:px-8">Guardar mis datos</button>
+</form>
+{% endblock %}

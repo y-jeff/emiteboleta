@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mx-auto flex min-h-[80vh] max-w-sm flex-col justify-center">
+  <a href="{% url 'home' %}" class="mb-8 flex items-center justify-center gap-2 text-xl font-extrabold tracking-tight">
+    <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand text-white">E</span>
+    <span>Emite<span class="text-brand">Boleta</span></span>
+  </a>
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <h1 class="text-xl font-bold">{% block heading %}{% endblock %}</h1>
+    <p class="mt-1 text-sm text-slate-500">{% block subheading %}{% endblock %}</p>
+    <form method="post" class="mt-6 space-y-4" novalidate>
+      {% csrf_token %}
+      {% for error in form.non_field_errors %}
+        <p class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+      {% endfor %}
+      {% for campo in form %}{% include "_campo.html" %}{% endfor %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <button class="w-full rounded-xl bg-brand py-3 font-semibold text-white shadow-sm hover:bg-brand-dark">{% block boton %}{% endblock %}</button>
+    </form>
+  </div>
+  <p class="mt-6 text-center text-sm text-slate-600">{% block alternativa %}{% endblock %}</p>
+</div>
+{% endblock %}
