@@ -2,7 +2,10 @@
 <a href="{{ boleta.get_absolute_url }}" class="flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-slate-50">
   <div class="min-w-0">
     <p class="truncate font-semibold">{{ boleta.receptor_nombre }}</p>
-    <p class="text-xs text-slate-500">N° {{ boleta.numero_fmt }} · {{ boleta.fecha|date:"d M Y" }}</p>
+    <p class="text-xs text-slate-500">
+      N° {{ boleta.numero_fmt }} · {{ boleta.fecha|date:"d M Y" }}
+      {% if boleta.folio_sii %}<span class="ml-1 rounded bg-sky-50 px-1.5 py-0.5 font-semibold text-sky-700">SII {{ boleta.folio_sii }}</span>{% endif %}
+    </p>
   </div>
   <div class="shrink-0 text-right">
     <p class="font-semibold tabular">{{ boleta.total|clp }}</p>

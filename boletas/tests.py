@@ -209,7 +209,7 @@ class VistasTests(TestCase):
         boleta = emitir(self.perfil, items=[(1, 25000)])
         respuesta = self.client.get(boleta.get_absolute_url())
         mensaje = respuesta.context["mensaje_whatsapp"]
-        self.assertIn("boleta N° 000001 por $25.000", mensaje)
+        self.assertIn("nota de cobro N° 000001 por $25.000", mensaje)
         self.assertIn("Cuenta RUT 12345678", mensaje)
         self.assertContains(respuesta, "https://wa.me/?text=")
 
@@ -217,7 +217,7 @@ class VistasTests(TestCase):
         boleta = emitir(self.perfil)
         respuesta = self.client.get(reverse("boletas:pdf", args=[boleta.pk]) + "?descargar=1")
         self.assertEqual(respuesta["Content-Type"], "application/pdf")
-        self.assertIn('attachment; filename="boleta-000001.pdf"', respuesta["Content-Disposition"])
+        self.assertIn('attachment; filename="nota-de-cobro-000001.pdf"', respuesta["Content-Disposition"])
 
     def test_cambiar_estado(self):
         boleta = emitir(self.perfil)
@@ -256,7 +256,7 @@ class VistasTests(TestCase):
         respuesta = self.client.get(reverse("boletas:exportar"))
         contenido = respuesta.content.decode("utf-8-sig")
         self.assertIn("attachment", respuesta["Content-Disposition"])
-        self.assertTrue(contenido.startswith("N°;Fecha;Cliente"))
+        self.assertTrue(contenido.startswith("N°;N° boleta SII;Fecha;Cliente"))
         self.assertIn("Cliente SpA;;Servicio;30000;0;0;30000;Pendiente", contenido)
 
     def test_catalogo_de_servicios(self):
@@ -273,6 +273,40 @@ class VistasTests(TestCase):
         respuesta = self.client.post(reverse("boletas:catalogo_eliminar", args=[ajeno.pk]))
         self.assertEqual(respuesta.status_code, 404)
         self.assertTrue(ServicioFrecuente.objects.filter(pk=ajeno.pk).exists())
+
+    def test_panel_sii_muestra_datos_para_copiar(self):
+        boleta = emitir(self.perfil, items=[(2, 15000)], receptor_rut="11.111.111-1")
+        respuesta = self.client.get(boleta.get_absolute_url())
+        self.assertIn(("Monto bruto", "30000"), respuesta.context["datos_sii"])
+        self.assertIn(("RUT del cliente", "11.111.111-1"), respuesta.context["datos_sii"])
+        self.assertContains(respuesta, "Abrir el SII")
+
+    def test_registrar_y_quitar_folio_sii(self):
+        boleta = emitir(self.perfil)
+        url = reverse("boletas:registrar_sii", args=[boleta.pk])
+        self.assertRedirects(self.client.post(url, {"folio_sii": "125"}), boleta.get_absolute_url())
+        boleta.refresh_from_db()
+        self.assertEqual(boleta.folio_sii, 125)
+        self.assertContains(self.client.get(boleta.get_absolute_url()), "Boleta de honorarios SII N° 125")
+        self.assertIn(";125;", self.client.get(reverse("boletas:exportar")).content.decode("utf-8-sig"))
+        self.assertEqual(len(self.client.get(reverse("boletas:lista"), {"q": "125"}).context["pagina"]), 1)
+        self.assertTrue(generar_pdf(boleta, self.perfil).startswith(b"%PDF"))
+
+        self.client.post(url, {"folio_sii": ""})
+        boleta.refresh_from_db()
+        self.assertIsNone(boleta.folio_sii)
+
+    def test_folio_sii_invalido_no_se_guarda(self):
+        boleta = emitir(self.perfil)
+        self.client.post(reverse("boletas:registrar_sii", args=[boleta.pk]), {"folio_sii": "-3"})
+        boleta.refresh_from_db()
+        self.assertIsNone(boleta.folio_sii)
+
+    def test_no_puede_registrar_folio_en_cobro_ajeno(self):
+        _, otro = crear_usuario("beto@ejemplo.cl")
+        ajena = emitir(otro)
+        respuesta = self.client.post(reverse("boletas:registrar_sii", args=[ajena.pk]), {"folio_sii": "9"})
+        self.assertEqual(respuesta.status_code, 404)
 
     def test_buscar(self):
         emitir(self.perfil)

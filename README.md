@@ -24,7 +24,7 @@ En Chile, miles de trabajadores independientes —gasfíteres, profesores partic
 
 EmiteBoleta es una app web *mobile-first*, **gratuita y de código abierto**, que resuelve eso: completas tus datos una vez y desde ahí cada boleta toma 30 segundos, con un PDF que parece hecho por un diseñador.
 
-> EmiteBoleta genera comprobantes de prestación de servicios. **No reemplaza** la boleta de honorarios electrónica del SII cuando corresponda emitirla.
+> EmiteBoleta genera **notas de cobro**, que son documentos no tributarios. **No reemplazan** la boleta de honorarios ni la factura electrónica del SII: la app te ayuda a emitir la boleta oficial en el SII y a registrar su número en cada cobro.
 
 ## Capturas
 
@@ -32,7 +32,10 @@ EmiteBoleta es una app web *mobile-first*, **gratuita y de código abierto**, qu
   <tr>
     <td align="center"><img src="docs/screenshots/movil-dashboard.png" width="250" alt="Inicio en celular"><br><sub>Totales del mes y boletas por cobrar</sub></td>
     <td align="center"><img src="docs/screenshots/movil-nueva.png" width="250" alt="Nueva boleta en celular"><br><sub>Catálogo de servicios y total en vivo</sub></td>
-    <td align="center"><img src="docs/screenshots/movil-detalle.png" width="250" alt="Detalle de boleta en celular"><br><sub>PDF, WhatsApp y estado de pago</sub></td>
+    <td align="center"><img src="docs/screenshots/movil-detalle.png" width="250" alt="Detalle de cobro en celular"><br><sub>PDF, WhatsApp y estado de pago</sub></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="3"><img src="docs/screenshots/movil-sii.png" width="250" alt="Panel para emitir en el SII"><br><sub>Puente con el SII: datos listos para copiar y N° de boleta oficial</sub></td>
   </tr>
 </table>
 
@@ -48,7 +51,8 @@ EmiteBoleta es una app web *mobile-first*, **gratuita y de código abierto**, qu
 | | |
 |---|---|
 | 🧾 **Boletas completas** | Varios servicios por boleta, retención opcional, notas y numeración correlativa automática |
-| 📄 **PDF profesional** | Logo, color de acento a elección, sello «PAGADA» y datos para transferencia |
+| 📄 **Nota de cobro en PDF** | Logo, color de acento a elección, sello «PAGADA» y datos para transferencia |
+| 🏛️ **Puente con el SII** | Abre la emisión de la boleta de honorarios en el SII con los datos listos para copiar y guarda su número en el cobro, el PDF y el Excel |
 | 📱 **Hecha para el celular** | Navegación inferior tipo app, botones al alcance del pulgar, instalable como PWA |
 | 💬 **Envío inmediato** | Botón de WhatsApp con mensaje listo y «Compartir» nativo para mandar el PDF |
 | 💰 **Control de cobros** | Estado pagada / pendiente, panel con lo emitido, pagado y por cobrar en el mes |

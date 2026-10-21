@@ -14,6 +14,7 @@ urlpatterns = [
     path("boletas/<int:pk>/editar/", views.editar, name="editar"),
     path("boletas/<int:pk>/pdf/", views.pdf, name="pdf"),
     path("boletas/<int:pk>/estado/", views.cambiar_estado, name="estado"),
+    path("boletas/<int:pk>/sii/", views.registrar_sii, name="registrar_sii"),
     path("boletas/<int:pk>/duplicar/", views.duplicar, name="duplicar"),
     path("boletas/<int:pk>/eliminar/", views.eliminar, name="eliminar"),
     path("catalogo/", views.catalogo, name="catalogo"),

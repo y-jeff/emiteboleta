@@ -103,12 +103,13 @@ class BoletaForm(EstiloMixin, forms.ModelForm):
         model = Boleta
         fields = [
             "receptor_nombre", "receptor_rut", "receptor_email", "receptor_direccion",
-            "fecha", "retencion_pct", "estado", "notas",
+            "fecha", "retencion_pct", "estado", "folio_sii", "notas",
         ]
         widgets = {
             "fecha": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
             "notas": forms.Textarea(attrs={"rows": 2, "placeholder": "Ej: Pago a 30 días. ¡Gracias por tu confianza!"}),
             "retencion_pct": forms.NumberInput(attrs={"step": "0.01", "min": "0", "max": "100", "inputmode": "decimal"}),
+            "folio_sii": forms.NumberInput(attrs={"min": "1", "inputmode": "numeric", "placeholder": "Opcional"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -127,6 +128,13 @@ class BoletaForm(EstiloMixin, forms.ModelForm):
         if valor is None or not 0 <= valor <= 100:
             raise forms.ValidationError("Debe estar entre 0 y 100.")
         return valor
+
+
+class FolioSiiForm(EstiloMixin, forms.ModelForm):
+    class Meta:
+        model = Boleta
+        fields = ["folio_sii"]
+        widgets = {"folio_sii": forms.NumberInput(attrs={"min": "1", "inputmode": "numeric", "placeholder": "Ej: 125"})}
 
 
 class ItemForm(EstiloMixin, forms.ModelForm):

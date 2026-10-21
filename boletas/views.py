@@ -1,5 +1,6 @@
 from functools import wraps
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -12,7 +13,7 @@ from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import BoletaForm, ItemFormSet, PerfilForm, ServicioForm
+from .forms import BoletaForm, FolioSiiForm, ItemFormSet, PerfilForm, ServicioForm
 from .models import Boleta, PerfilEmisor
 from .formato import clp
 from .pdf import generar_pdf
@@ -115,7 +116,7 @@ def lista(request):
     if q:
         filtro = Q(receptor_nombre__icontains=q) | Q(receptor_rut__icontains=q) | Q(items__descripcion__icontains=q)
         if q.isdigit():
-            filtro |= Q(numero=int(q))
+            filtro |= Q(numero=int(q)) | Q(folio_sii=int(q))
         boletas = boletas.filter(filtro).distinct()
     if estado in dict(Boleta.ESTADOS):
         boletas = boletas.filter(estado=estado)
@@ -183,7 +184,7 @@ def editar(request, pk):
 
 
 def _mensaje_whatsapp(boleta):
-    partes = [f"Hola {boleta.receptor_nombre}, te envío la boleta N° {boleta.numero_fmt} por {clp(boleta.total)}."]
+    partes = [f"Hola {boleta.receptor_nombre}, te envío la nota de cobro N° {boleta.numero_fmt} por {clp(boleta.total)}."]
     if boleta.pagada:
         partes.append("Ya está registrada como pagada. ¡Gracias!")
     elif boleta.emisor_datos_pago:
@@ -192,10 +193,43 @@ def _mensaje_whatsapp(boleta):
     return "\n\n".join(partes)
 
 
+def _datos_sii(boleta):
+    """Lo que pide el formulario de boleta de honorarios del SII, listo para copiar."""
+    datos = [("Cliente", boleta.receptor_nombre)]
+    if boleta.receptor_rut:
+        datos.append(("RUT del cliente", boleta.receptor_rut))
+    datos.append(("Monto bruto", str(boleta.subtotal)))
+    datos += [(f"Servicio {i}" if len(boleta.items.all()) > 1 else "Servicio", item.descripcion)
+              for i, item in enumerate(boleta.items.all(), start=1)]
+    return datos
+
+
 @login_required
 def detalle(request, pk):
     boleta = _boleta_del_usuario(request, pk)
-    return render(request, "boletas/detalle.html", {"boleta": boleta, "mensaje_whatsapp": _mensaje_whatsapp(boleta)})
+    return render(request, "boletas/detalle.html", {
+        "boleta": boleta,
+        "mensaje_whatsapp": _mensaje_whatsapp(boleta),
+        "folio_form": FolioSiiForm(instance=boleta),
+        "datos_sii": _datos_sii(boleta),
+        "sii_url": settings.SII_EMITIR_BHE_URL,
+    })
+
+
+@login_required
+@require_POST
+def registrar_sii(request, pk):
+    boleta = _boleta_del_usuario(request, pk)
+    form = FolioSiiForm(request.POST, instance=boleta)
+    if form.is_valid():
+        form.save()
+        if boleta.folio_sii:
+            messages.success(request, f"Registraste la boleta SII N° {boleta.folio_sii} en este cobro.")
+        else:
+            messages.success(request, "Quitaste el número de boleta SII de este cobro.")
+    else:
+        messages.error(request, "El número de boleta SII debe ser un número entero positivo.")
+    return redirect(boleta)
 
 
 @login_required
@@ -204,7 +238,7 @@ def pdf(request, pk):
     contenido = generar_pdf(boleta, PerfilEmisor.de(request.user))
     respuesta = HttpResponse(contenido, content_type="application/pdf")
     disposicion = "attachment" if request.GET.get("descargar") else "inline"
-    respuesta["Content-Disposition"] = f'{disposicion}; filename="boleta-{boleta.numero_fmt}.pdf"'
+    respuesta["Content-Disposition"] = f'{disposicion}; filename="nota-de-cobro-{boleta.numero_fmt}.pdf"'
     return respuesta
 
 

@@ -75,11 +75,15 @@ class Command(BaseCommand):
             ServicioFrecuente.objects.create(user=user, descripcion=descripcion, precio_unitario=precio)
 
         hoy = timezone.localdate()
+        folio = 100  # las boletas antiguas ya tienen su boleta de honorarios emitida en el SII
         for dias, cliente, rut, items, retencion, pagada in BOLETAS:
             boleta = Boleta(
                 fecha=hoy - timedelta(days=dias), receptor_nombre=cliente, receptor_rut=rut,
                 retencion_pct=Decimal(retencion),
             )
+            if dias >= 30:
+                folio += 1
+                boleta.folio_sii = folio
             boleta.emitir(perfil)
             for descripcion, cantidad, precio in items:
                 Item.objects.create(boleta=boleta, descripcion=descripcion, cantidad=cantidad, precio_unitario=precio)

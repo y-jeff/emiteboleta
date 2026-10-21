@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de EmiteBoleta. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.7.0] — 2026-10-21
+
+### Agregado
+- **Puente con el SII** en cada cobro: botón para abrir la emisión de la boleta de honorarios en el SII, datos listos para copiar (cliente, RUT, monto bruto y servicios) y campo para registrar el número de la boleta oficial.
+- El N° de boleta SII aparece en el PDF, en el Excel, en el historial y se puede buscar.
+
+### Cambiado
+- El PDF ahora se titula **«Nota de cobro»** y su pie aclara que es un documento no tributario, para no confundirlo con una boleta del SII.
+- El sello «PAGADA» se movió para no tapar el número de boleta SII.
+
 ## [0.6.0] — 2026-10-21
 
 ### Agregado
@@ -65,6 +75,7 @@ Todos los cambios relevantes de EmiteBoleta. El formato sigue [Keep a Changelog]
 - Validación de RUT chileno.
 - Configuración de deploy para Render y Railway.
 
+[0.7.0]: https://github.com/y-jeff/emiteboleta/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/y-jeff/emiteboleta/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/y-jeff/emiteboleta/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/y-jeff/emiteboleta/compare/v0.3.0...v0.4.0
