@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Boleta, Item, PerfilEmisor
+from .models import Boleta, Item, PerfilEmisor, ServicioFrecuente
 
 
 class ItemInline(admin.TabularInline):
@@ -21,3 +21,9 @@ class BoletaAdmin(admin.ModelAdmin):
 class PerfilEmisorAdmin(admin.ModelAdmin):
     list_display = ("user", "nombre", "rut", "siguiente_numero")
     search_fields = ("nombre", "rut", "user__username")
+
+
+@admin.register(ServicioFrecuente)
+class ServicioFrecuenteAdmin(admin.ModelAdmin):
+    list_display = ("descripcion", "precio_unitario", "user")
+    search_fields = ("descripcion", "user__username")

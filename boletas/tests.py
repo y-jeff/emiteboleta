@@ -10,7 +10,7 @@ from django.urls import reverse
 from PIL import Image
 
 from . import formato, rut
-from .models import Boleta, Item, PerfilEmisor
+from .models import Boleta, Item, PerfilEmisor, ServicioFrecuente
 from .pdf import generar_pdf
 
 User = get_user_model()
@@ -170,7 +170,7 @@ class VistasTests(TestCase):
         boleta = emitir(self.perfil)
         for url in (
             reverse("boletas:dashboard"), reverse("boletas:lista"), reverse("boletas:crear"),
-            reverse("boletas:perfil"), boleta.get_absolute_url(), reverse("boletas:editar", args=[boleta.pk]),
+            reverse("boletas:perfil"), reverse("boletas:catalogo"), boleta.get_absolute_url(), reverse("boletas:editar", args=[boleta.pk]),
         ):
             with self.subTest(url=url):
                 self.assertEqual(self.client.get(url).status_code, 200)
@@ -258,6 +258,21 @@ class VistasTests(TestCase):
         self.assertIn("attachment", respuesta["Content-Disposition"])
         self.assertTrue(contenido.startswith("N°;Fecha;Cliente"))
         self.assertIn("Cliente SpA;;Servicio;30000;0;0;30000;Pendiente", contenido)
+
+    def test_catalogo_de_servicios(self):
+        for i in range(8):
+            self.client.post(reverse("boletas:catalogo"), {"descripcion": f"Servicio {i}", "precio_unitario": "1000"})
+        self.assertEqual(self.user.servicios.count(), 8)
+        formulario = self.client.get(reverse("boletas:crear"))
+        self.assertEqual(len(formulario.context["catalogo"]), 8)
+        self.assertContains(formulario, "+ Servicio 0")
+
+    def test_no_puede_borrar_servicios_de_otro_usuario(self):
+        otro, _ = crear_usuario("beto@ejemplo.cl")
+        ajeno = ServicioFrecuente.objects.create(user=otro, descripcion="Ajeno", precio_unitario=1)
+        respuesta = self.client.post(reverse("boletas:catalogo_eliminar", args=[ajeno.pk]))
+        self.assertEqual(respuesta.status_code, 404)
+        self.assertTrue(ServicioFrecuente.objects.filter(pk=ajeno.pk).exists())
 
     def test_buscar(self):
         emitir(self.perfil)

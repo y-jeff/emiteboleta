@@ -4,6 +4,14 @@
 <h1 class="text-2xl font-bold tracking-tight">Mis datos de emisor</h1>
 <p class="mt-1 text-sm text-slate-500">Se completan una vez y aparecen en todas tus boletas.</p>
 
+<a href="{% url 'boletas:catalogo' %}" class="mt-5 flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 hover:border-brand/40">
+  <span>
+    <span class="block font-semibold">Mis servicios</span>
+    <span class="block text-sm text-slate-500">{{ perfil.user.servicios.count }} guardado{{ perfil.user.servicios.count|pluralize }} para agregar a tus boletas con un toque</span>
+  </span>
+  <span class="text-xl text-brand">&rarr;</span>
+</a>
+
 <form method="post" enctype="multipart/form-data" class="mt-5 space-y-5" novalidate>
   {% csrf_token %}
   {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}

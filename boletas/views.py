@@ -12,7 +12,7 @@ from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import BoletaForm, ItemFormSet, PerfilForm
+from .forms import BoletaForm, ItemFormSet, PerfilForm, ServicioForm
 from .models import Boleta, PerfilEmisor
 from .formato import clp
 from .pdf import generar_pdf
@@ -166,6 +166,7 @@ def _formulario(request, boleta, es_nueva):
         "boleta": boleta,
         "es_nueva": es_nueva,
         "clientes": _clientes_frecuentes(request.user),
+        "catalogo": list(request.user.servicios.values("descripcion", "precio_unitario")),
         "proximo_numero": f"{request.perfil.siguiente_numero:06d}",
     })
 
@@ -273,3 +274,28 @@ def logo(request):
     respuesta = HttpResponse(bytes(perfil.logo), content_type=perfil.logo_mime)
     respuesta["Cache-Control"] = "private, max-age=300"
     return respuesta
+
+
+@login_required
+def catalogo(request):
+    form = ServicioForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        servicio = form.save(commit=False)
+        servicio.user = request.user
+        servicio.save()
+        messages.success(request, f"«{servicio.descripcion}» quedó guardado en tu catálogo.")
+        return redirect("boletas:catalogo")
+    return render(request, "boletas/catalogo.html", {
+        "form": form,
+        "servicios": request.user.servicios.all(),
+    })
+
+
+@login_required
+@require_POST
+def catalogo_eliminar(request, pk):
+    servicio = get_object_or_404(request.user.servicios, pk=pk)
+    servicio.delete()
+    messages.success(request, f"«{servicio.descripcion}» se quitó de tu catálogo.")
+    return redirect("boletas:catalogo")
+

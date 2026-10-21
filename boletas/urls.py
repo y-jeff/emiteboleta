@@ -16,6 +16,8 @@ urlpatterns = [
     path("boletas/<int:pk>/estado/", views.cambiar_estado, name="estado"),
     path("boletas/<int:pk>/duplicar/", views.duplicar, name="duplicar"),
     path("boletas/<int:pk>/eliminar/", views.eliminar, name="eliminar"),
+    path("catalogo/", views.catalogo, name="catalogo"),
+    path("catalogo/<int:pk>/eliminar/", views.catalogo_eliminar, name="catalogo_eliminar"),
     path("perfil/", views.perfil, name="perfil"),
     path("perfil/logo/", views.logo, name="logo"),
 ]
