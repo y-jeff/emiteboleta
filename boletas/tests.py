@@ -157,6 +157,11 @@ class VistasTests(TestCase):
         respuesta = self.client.get(reverse("boletas:dashboard"))
         self.assertRedirects(respuesta, f"{reverse('cuentas:login')}?next={reverse('boletas:dashboard')}")
 
+    def test_pagina_404_propia(self):
+        respuesta = self.client.get("/no-existe/")
+        self.assertEqual(respuesta.status_code, 404)
+        self.assertTemplateUsed(respuesta, "404.html")
+
     def test_landing_publica(self):
         self.client.logout()
         self.assertContains(self.client.get(reverse("home")), "Crear mi cuenta gratis")
