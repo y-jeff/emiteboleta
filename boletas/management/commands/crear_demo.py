@@ -1,10 +1,12 @@
 from datetime import timedelta
 from decimal import Decimal
+from io import BytesIO
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
+from PIL import Image, ImageDraw
 
 from boletas.models import Boleta, Item, PerfilEmisor
 
@@ -20,6 +22,18 @@ BOLETAS = [
     (4, "Juan Pérez", "", [("Clase particular de diseño", Decimal("1.5"), 20000)], False),
     (1, "Ferretería Los Aromos", "", [("Diseño de catálogo", 1, 220000), ("Ajustes adicionales", 2, 15000)], False),
 ]
+
+
+def logo_demo():
+    """Isotipo simple dibujado con Pillow, para no depender de archivos externos."""
+    img = Image.new("RGBA", (400, 400), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse((0, 0, 400, 400), fill="#0f766e")
+    d.ellipse((90, 90, 310, 310), fill="#5eead4")
+    d.rectangle((200, 90, 310, 200), fill="#0f766e")
+    buffer = BytesIO()
+    img.save(buffer, "PNG")
+    return buffer.getvalue()
 
 
 class Command(BaseCommand):
@@ -40,6 +54,7 @@ class Command(BaseCommand):
         perfil.telefono = "+56 9 8765 4321"
         perfil.datos_pago = "Banco Estado · Cuenta RUT\nN° 12345678"
         perfil.color = "#0f766e"
+        perfil.logo, perfil.logo_mime = logo_demo(), "image/png"
         perfil.save()
 
         hoy = timezone.localdate()
