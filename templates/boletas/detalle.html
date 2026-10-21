@@ -93,7 +93,7 @@
   (function () {
     const boton = document.getElementById("compartir");
     if (!navigator.canShare) return;
-    const nombre = "boleta-{{ boleta.numero_fmt }}.pdf";
+    const nombre = "nota-de-cobro-{{ boleta.numero_fmt }}.pdf";
     const prueba = new File([""], nombre, { type: "application/pdf" });
     if (!navigator.canShare({ files: [prueba] })) return;
     boton.hidden = false;

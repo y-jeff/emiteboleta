@@ -183,7 +183,7 @@ def editar(request, pk):
 
 
 def _mensaje_whatsapp(boleta):
-    partes = [f"Hola {boleta.receptor_nombre}, te envío la boleta N° {boleta.numero_fmt} por {clp(boleta.total)}."]
+    partes = [f"Hola {boleta.receptor_nombre}, te envío la nota de cobro N° {boleta.numero_fmt} por {clp(boleta.total)}."]
     if boleta.pagada:
         partes.append("Ya está registrada como pagada. ¡Gracias!")
     elif boleta.emisor_datos_pago:
@@ -204,7 +204,7 @@ def pdf(request, pk):
     contenido = generar_pdf(boleta, PerfilEmisor.de(request.user))
     respuesta = HttpResponse(contenido, content_type="application/pdf")
     disposicion = "attachment" if request.GET.get("descargar") else "inline"
-    respuesta["Content-Disposition"] = f'{disposicion}; filename="boleta-{boleta.numero_fmt}.pdf"'
+    respuesta["Content-Disposition"] = f'{disposicion}; filename="nota-de-cobro-{boleta.numero_fmt}.pdf"'
     return respuesta
 
 

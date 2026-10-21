@@ -92,7 +92,7 @@ def _cabecera(boleta, logo, est):
     izquierda += [_p(linea, est["dato"]) for linea in lineas if linea]
 
     derecha = [
-        _p("BOLETA DE SERVICIOS", est["doc"]),
+        _p("NOTA DE COBRO", est["doc"]),
         Spacer(1, 1 * mm),
         _p(f"N° {boleta.numero_fmt}", est["numero"]),
         Spacer(1, 2 * mm),
@@ -205,7 +205,7 @@ def _fondo(boleta, acento):
         canvas.setFillColor(GRIS)
         canvas.drawString(
             MARGEN, 10 * mm,
-            "Comprobante de prestación de servicios. No reemplaza a la boleta de honorarios electrónica del SII.",
+            "Documento no tributario. No reemplaza a la boleta de honorarios ni a la factura electrónica del SII.",
         )
         canvas.drawRightString(ANCHO - MARGEN, 10 * mm, f"N° {boleta.numero_fmt} · Página {doc.page}")
         canvas.restoreState()
@@ -245,9 +245,9 @@ def generar_pdf(boleta, perfil=None):
     doc = BaseDocTemplate(
         buffer,
         pagesize=A4,
-        title=f"Boleta N° {boleta.numero_fmt}",
+        title=f"Nota de cobro N° {boleta.numero_fmt}",
         author=boleta.emisor_nombre,
-        subject=f"Boleta de servicios para {boleta.receptor_nombre}",
+        subject=f"Nota de cobro para {boleta.receptor_nombre}",
         creator="EmiteBoleta",
     )
     inferior = 22 * mm

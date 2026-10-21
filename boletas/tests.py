@@ -209,7 +209,7 @@ class VistasTests(TestCase):
         boleta = emitir(self.perfil, items=[(1, 25000)])
         respuesta = self.client.get(boleta.get_absolute_url())
         mensaje = respuesta.context["mensaje_whatsapp"]
-        self.assertIn("boleta N° 000001 por $25.000", mensaje)
+        self.assertIn("nota de cobro N° 000001 por $25.000", mensaje)
         self.assertIn("Cuenta RUT 12345678", mensaje)
         self.assertContains(respuesta, "https://wa.me/?text=")
 
@@ -217,7 +217,7 @@ class VistasTests(TestCase):
         boleta = emitir(self.perfil)
         respuesta = self.client.get(reverse("boletas:pdf", args=[boleta.pk]) + "?descargar=1")
         self.assertEqual(respuesta["Content-Type"], "application/pdf")
-        self.assertIn('attachment; filename="boleta-000001.pdf"', respuesta["Content-Disposition"])
+        self.assertIn('attachment; filename="nota-de-cobro-000001.pdf"', respuesta["Content-Disposition"])
 
     def test_cambiar_estado(self):
         boleta = emitir(self.perfil)
