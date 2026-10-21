@@ -57,7 +57,7 @@ Para probar con datos de ejemplo, crea la cuenta demo (se reinicia cada vez que 
 
 ```bash
 python manage.py crear_demo
-# email: demo@emiteboleta.cl · clave: demo-emiteboleta
+# email: demo@example.com · clave: demo-emiteboleta
 ```
 
 ### Tests
@@ -76,8 +76,8 @@ Variables de entorno necesarias en producción:
 |----------|---------|
 | `SECRET_KEY` | una cadena larga y aleatoria |
 | `DATABASE_URL` | `postgres://usuario:clave@host:5432/emiteboleta` |
-| `ALLOWED_HOSTS` | `emiteboleta.cl` |
-| `CSRF_TRUSTED_ORIGINS` | `https://emiteboleta.cl` |
+| `ALLOWED_HOSTS` | `tu-dominio.cl` (opcional en Render y Railway: su subdominio se agrega solo) |
+| `CSRF_TRUSTED_ORIGINS` | `https://tu-dominio.cl` (solo si usas dominio propio) |
 
 - **Render**: conecta el repositorio y usa el *Blueprint* de [render.yaml](render.yaml), que crea el servicio web y la base PostgreSQL.
 - **Railway**: crea un proyecto con PostgreSQL y este repositorio; el [Procfile](Procfile) corre las migraciones y levanta Gunicorn. El dominio público se agrega solo a `ALLOWED_HOSTS`.

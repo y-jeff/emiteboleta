@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from boletas.models import Boleta, Item, PerfilEmisor
 
-EMAIL = "demo@emiteboleta.cl"
+EMAIL = "demo@example.com"
 CLAVE = "demo-emiteboleta"
 
 # (días atrás, cliente, rut, [(descripción, cantidad, precio)], pagada)
