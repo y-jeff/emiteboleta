@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: emiteboleta
+    runtime: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "0"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: emiteboleta-db
+          property: connectionString
+
+databases:
+  - name: emiteboleta-db
+    plan: free
