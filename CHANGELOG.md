@@ -2,6 +2,17 @@
 
 Todos los cambios relevantes de EmiteBoleta. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.5.0] — 2026-10-21
+
+### Agregado
+- **Catálogo de servicios frecuentes**: se guardan con su precio y se agregan a la boleta con un toque desde el formulario.
+- Guía para publicar la app gratis con Render y Neon ([docs/deploy-gratis.md](docs/deploy-gratis.md)).
+- Sección de código abierto en el README.
+
+### Cambiado
+- `render.yaml` usa una base de datos externa (Neon) en vez de la base Free de Render, que vence a los 30 días.
+- La cuenta demo y la portada usan a 3R Labs SpA como cliente de ejemplo.
+
 ## [0.4.0] — 2026-10-21
 
 ### Agregado
@@ -44,6 +55,7 @@ Todos los cambios relevantes de EmiteBoleta. El formato sigue [Keep a Changelog]
 - Validación de RUT chileno.
 - Configuración de deploy para Render y Railway.
 
+[0.5.0]: https://github.com/y-jeff/emiteboleta/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/y-jeff/emiteboleta/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/y-jeff/emiteboleta/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/y-jeff/emiteboleta/compare/v0.1.0...v0.2.0

@@ -12,6 +12,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-green)](LICENSE)
+![Código abierto](https://img.shields.io/badge/c%C3%B3digo-abierto-brightgreen)
 
 <img src="docs/screenshots/landing.png" width="820" alt="Portada de EmiteBoleta">
 
@@ -21,7 +22,7 @@
 
 En Chile, miles de trabajadores independientes —gasfíteres, profesores particulares, diseñadoras, técnicos— cobran con un mensaje de WhatsApp o una plantilla de Word mal armada. No llevan registro de quién les pagó, repiten números de boleta y pierden tiempo rellenando siempre los mismos datos. Y el **80 % trabaja solo desde el celular**.
 
-EmiteBoleta es una app web *mobile-first* que resuelve eso: completas tus datos una vez y desde ahí cada boleta toma 30 segundos, con un PDF que parece hecho por un diseñador.
+EmiteBoleta es una app web *mobile-first*, **gratuita y de código abierto**, que resuelve eso: completas tus datos una vez y desde ahí cada boleta toma 30 segundos, con un PDF que parece hecho por un diseñador.
 
 > EmiteBoleta genera comprobantes de prestación de servicios. **No reemplaza** la boleta de honorarios electrónica del SII cuando corresponda emitirla.
 
@@ -30,7 +31,7 @@ EmiteBoleta es una app web *mobile-first* que resuelve eso: completas tus datos 
 <table>
   <tr>
     <td align="center"><img src="docs/screenshots/movil-dashboard.png" width="250" alt="Inicio en celular"><br><sub>Totales del mes y boletas por cobrar</sub></td>
-    <td align="center"><img src="docs/screenshots/movil-nueva.png" width="250" alt="Nueva boleta en celular"><br><sub>Varios servicios con total en vivo</sub></td>
+    <td align="center"><img src="docs/screenshots/movil-nueva.png" width="250" alt="Nueva boleta en celular"><br><sub>Catálogo de servicios y total en vivo</sub></td>
     <td align="center"><img src="docs/screenshots/movil-detalle.png" width="250" alt="Detalle de boleta en celular"><br><sub>PDF, WhatsApp y estado de pago</sub></td>
   </tr>
 </table>
@@ -53,6 +54,7 @@ EmiteBoleta es una app web *mobile-first* que resuelve eso: completas tus datos 
 | 💰 **Control de cobros** | Estado pagada / pendiente, panel con lo emitido, pagado y por cobrar en el mes |
 | 📊 **Resumen anual** | Bruto, retención y líquido por mes, con exportación a Excel |
 | 👤 **Tus datos una vez** | Perfil de emisor reutilizable y autocompletar clientes anteriores |
+| ⚡ **Catálogo de servicios** | Guarda lo que cobras seguido y agrégalo a la boleta con un toque |
 | 🔐 **Cuentas** | Registro con email, recuperación de contraseña y aislamiento total entre usuarios |
 
 ## Decisiones técnicas
@@ -73,7 +75,7 @@ EmiteBoleta es una app web *mobile-first* que resuelve eso: completas tus datos 
 | Base de datos | PostgreSQL (producción) · SQLite (local) |
 | PDF | ReportLab |
 | Interfaz | Tailwind CSS · JavaScript sin frameworks |
-| Infraestructura | Render o Railway · Gunicorn · WhiteNoise · GitHub Actions |
+| Infraestructura | Render + Neon (plan gratuito) · Gunicorn · WhiteNoise · GitHub Actions |
 
 ## Correr en local
 
@@ -114,21 +116,28 @@ Si cambias clases de Tailwind en las plantillas, recompila el CSS con el [ejecut
 tailwindcss -i static/src/app.css -o static/css/app.css --minify
 ```
 
-## Deploy
+## Deploy gratis
 
-Funciona con el subdominio gratuito de Render o Railway; un dominio propio es opcional.
+La app se puede publicar **sin costo** con [Render](https://render.com) (web) y [Neon](https://neon.com) (PostgreSQL). La guía paso a paso está en **[docs/deploy-gratis.md](docs/deploy-gratis.md)**; en resumen:
+
+1. Crea una base de datos gratis en Neon y copia su URL.
+2. En Render, **New → Blueprint** con este repositorio y pega la URL cuando la pida.
+3. Listo: cada push a `main` se publica solo en `https://<nombre>.onrender.com`.
 
 | Variable | Requerida | Descripción |
 |----------|-----------|-------------|
-| `SECRET_KEY` | Sí | Cadena larga y aleatoria |
-| `DATABASE_URL` | Sí | `postgres://usuario:clave@host:5432/emiteboleta` |
-| `ALLOWED_HOSTS` | Solo con dominio propio | `tu-dominio.cl` (el subdominio del hosting se agrega solo) |
-| `CSRF_TRUSTED_ORIGINS` | Solo con dominio propio | `https://tu-dominio.cl` |
+| `SECRET_KEY` | Sí | Render la genera sola |
+| `DATABASE_URL` | Sí | URL de PostgreSQL (Neon) |
+| `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | Solo con dominio propio | `tu-dominio.cl` / `https://tu-dominio.cl` |
 | `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | No | SMTP para recuperar contraseña; sin esto los correos van al log |
-| `DEFAULT_FROM_EMAIL` | No | Remitente de los correos |
 
-- **Render:** conecta el repositorio y usa el *Blueprint* de [render.yaml](render.yaml), que crea el servicio web y la base PostgreSQL.
-- **Railway:** crea un proyecto con PostgreSQL y este repositorio; el [Procfile](Procfile) corre las migraciones y levanta Gunicorn.
+También incluye un [Procfile](Procfile) por si prefieres Railway u otro hosting compatible.
+
+## Código abierto
+
+EmiteBoleta es **gratis y de código abierto** bajo la [licencia MIT](LICENSE): puedes usarlo, estudiarlo, adaptarlo y publicar tu propia instancia. El proyecto y sus derechos de autor siguen siendo de su autor; la licencia solo pide mantener el aviso de copyright.
+
+¿Encontraste un error o tienes una idea? [Abre un issue](https://github.com/y-jeff/emiteboleta/issues/new/choose). Los pull requests son bienvenidos.
 
 ## Flujo de trabajo
 
@@ -152,7 +161,7 @@ boletas/
   management/ Comando crear_demo
 templates/    Plantillas con Tailwind
 static/       CSS compilado, íconos PWA y manifest
-docs/         Capturas para este README
+docs/         Guía de deploy gratis y capturas para este README
 ```
 
 ## Próximos pasos
