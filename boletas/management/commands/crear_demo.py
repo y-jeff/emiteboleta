@@ -8,23 +8,23 @@ from django.db import transaction
 from django.utils import timezone
 from PIL import Image, ImageDraw
 
-from boletas.models import Boleta, Item, PerfilEmisor
+from boletas.models import Boleta, Item, PerfilEmisor, ServicioFrecuente
 
 EMAIL = "demo@example.com"
 CLAVE = "demo-emiteboleta"
 
 # (días atrás, cliente, rut, [(descripción, cantidad, precio)], retención %, pagada)
 BOLETAS = [
-    (160, "Café El Puerto SpA", "76.123.456-0", [("Diseño de logotipo", 1, 180000)], "15.25", True),
+    (160, "3R Labs SpA", "", [("Diseño de logotipo", 1, 180000)], "15.25", True),
     (140, "Panadería Doña Rosa", "", [("Diseño de carta de menú", 2, 45000)], "0", True),
     (118, "Constructora Andes Ltda.", "77.654.321-K", [("Señalética para obra", 6, 12000), ("Instalación", 1, 35000)], "15.25", True),
     (95, "Juan Pérez", "", [("Clase particular de diseño", 4, 20000)], "0", True),
-    (75, "Café El Puerto SpA", "76.123.456-0", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
+    (75, "3R Labs SpA", "", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
     (52, "Ferretería Los Aromos", "", [("Fotografía de productos", 30, 4000)], "0", True),
-    (40, "Café El Puerto SpA", "76.123.456-0", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
+    (40, "3R Labs SpA", "", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
     (33, "Panadería Doña Rosa", "", [("Diseño de bolsas y etiquetas", 1, 95000)], "0", True),
     (20, "Constructora Andes Ltda.", "77.654.321-K", [("Diseño de folleto de proyecto", 1, 210000)], "15.25", False),
-    (9, "Café El Puerto SpA", "76.123.456-0", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
+    (9, "3R Labs SpA", "", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
     (4, "Juan Pérez", "", [("Clase particular de diseño", Decimal("1.5"), 20000)], "0", False),
     (1, "Ferretería Los Aromos", "", [("Diseño de catálogo", 1, 220000), ("Ajustes adicionales", 2, 15000)], "0", False),
 ]
@@ -40,6 +40,14 @@ def logo_demo():
     buffer = BytesIO()
     img.save(buffer, "PNG")
     return buffer.getvalue()
+
+
+SERVICIOS = [
+    ("Diseño de logotipo", 180000),
+    ("Gestión de redes sociales (mes)", 150000),
+    ("Mantención web (mes)", 45000),
+    ("Clase particular de diseño", 20000),
+]
 
 
 class Command(BaseCommand):
@@ -62,6 +70,9 @@ class Command(BaseCommand):
         perfil.color = "#0f766e"
         perfil.logo, perfil.logo_mime = logo_demo(), "image/png"
         perfil.save()
+
+        for descripcion, precio in SERVICIOS:
+            ServicioFrecuente.objects.create(user=user, descripcion=descripcion, precio_unitario=precio)
 
         hoy = timezone.localdate()
         for dias, cliente, rut, items, retencion, pagada in BOLETAS:
