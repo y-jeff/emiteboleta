@@ -199,6 +199,14 @@ class VistasTests(TestCase):
         self.assertEqual(self.client.post(reverse("boletas:eliminar", args=[ajena.pk])).status_code, 404)
         self.assertTrue(Boleta.objects.filter(pk=ajena.pk).exists())
 
+    def test_enlace_whatsapp_con_monto_y_datos_de_pago(self):
+        boleta = emitir(self.perfil, items=[(1, 25000)])
+        respuesta = self.client.get(boleta.get_absolute_url())
+        mensaje = respuesta.context["mensaje_whatsapp"]
+        self.assertIn("boleta N° 000001 por $25.000", mensaje)
+        self.assertIn("Cuenta RUT 12345678", mensaje)
+        self.assertContains(respuesta, "https://wa.me/?text=")
+
     def test_descargar_pdf(self):
         boleta = emitir(self.perfil)
         respuesta = self.client.get(reverse("boletas:pdf", args=[boleta.pk]) + "?descargar=1")

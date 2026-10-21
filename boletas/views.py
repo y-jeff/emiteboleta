@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import BoletaForm, ItemFormSet, PerfilForm
 from .models import Boleta, PerfilEmisor
+from .formato import clp
 from .pdf import generar_pdf
 from .reportes import exportar_csv, resumen_anual
 
@@ -180,10 +181,20 @@ def editar(request, pk):
     return _formulario(request, _boleta_del_usuario(request, pk), es_nueva=False)
 
 
+def _mensaje_whatsapp(boleta):
+    partes = [f"Hola {boleta.receptor_nombre}, te envío la boleta N° {boleta.numero_fmt} por {clp(boleta.total)}."]
+    if boleta.pagada:
+        partes.append("Ya está registrada como pagada. ¡Gracias!")
+    elif boleta.emisor_datos_pago:
+        partes.append(f"Datos para transferencia:\n{boleta.emisor_datos_pago}")
+    partes.append(boleta.emisor_nombre)
+    return "\n\n".join(partes)
+
+
 @login_required
 def detalle(request, pk):
     boleta = _boleta_del_usuario(request, pk)
-    return render(request, "boletas/detalle.html", {"boleta": boleta})
+    return render(request, "boletas/detalle.html", {"boleta": boleta, "mensaje_whatsapp": _mensaje_whatsapp(boleta)})
 
 
 @login_required
