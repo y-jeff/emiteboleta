@@ -182,3 +182,20 @@ class Item(models.Model):
     @property
     def total(self):
         return redondear(self.cantidad * self.precio_unitario)
+
+
+class ServicioFrecuente(models.Model):
+    """Servicio guardado para agregarlo a una boleta con un toque."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="servicios")
+    descripcion = models.CharField("Descripción", max_length=255)
+    precio_unitario = models.PositiveBigIntegerField("Precio unitario")
+    creado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["descripcion"]
+        verbose_name = "servicio frecuente"
+        verbose_name_plural = "servicios frecuentes"
+
+    def __str__(self):
+        return self.descripcion

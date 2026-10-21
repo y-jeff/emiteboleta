@@ -30,6 +30,7 @@
           <a href="{% url 'boletas:dashboard' %}" class="rounded-lg px-3 py-2 {% if nombre == 'dashboard' %}bg-slate-100 text-slate-900{% else %}text-slate-600 hover:text-slate-900{% endif %}">Inicio</a>
           <a href="{% url 'boletas:lista' %}" class="rounded-lg px-3 py-2 {% if nombre == 'lista' or nombre == 'detalle' %}bg-slate-100 text-slate-900{% else %}text-slate-600 hover:text-slate-900{% endif %}">Boletas</a>
           <a href="{% url 'boletas:resumen' %}" class="rounded-lg px-3 py-2 {% if nombre == 'resumen' %}bg-slate-100 text-slate-900{% else %}text-slate-600 hover:text-slate-900{% endif %}">Resumen</a>
+          <a href="{% url 'boletas:catalogo' %}" class="rounded-lg px-3 py-2 {% if nombre == 'catalogo' %}bg-slate-100 text-slate-900{% else %}text-slate-600 hover:text-slate-900{% endif %}">Servicios</a>
           <a href="{% url 'boletas:perfil' %}" class="rounded-lg px-3 py-2 {% if nombre == 'perfil' %}bg-slate-100 text-slate-900{% else %}text-slate-600 hover:text-slate-900{% endif %}">Mis datos</a>
           <form method="post" action="{% url 'cuentas:logout' %}">{% csrf_token %}
             <button class="rounded-lg px-3 py-2 text-slate-600 hover:text-slate-900">Salir</button>

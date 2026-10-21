@@ -5,7 +5,7 @@ from django.forms import inlineformset_factory
 from PIL import Image, UnidentifiedImageError
 
 from . import rut
-from .models import Boleta, Item, PerfilEmisor
+from .models import Boleta, Item, PerfilEmisor, ServicioFrecuente
 
 INPUT = (
     "block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-base "
@@ -156,3 +156,14 @@ ItemFormSet = inlineformset_factory(
     can_delete=True,
     max_num=50,
 )
+
+
+class ServicioForm(EstiloMixin, forms.ModelForm):
+    class Meta:
+        model = ServicioFrecuente
+        fields = ["descripcion", "precio_unitario"]
+        widgets = {
+            "descripcion": forms.TextInput(attrs={"placeholder": "Ej: Clase de guitarra (1 hora)"}),
+            "precio_unitario": forms.NumberInput(attrs={"min": "0", "inputmode": "numeric", "placeholder": "15000"}),
+        }
+        labels = {"precio_unitario": "Precio ($)"}
