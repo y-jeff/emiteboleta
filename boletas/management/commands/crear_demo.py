@@ -13,14 +13,20 @@ from boletas.models import Boleta, Item, PerfilEmisor
 EMAIL = "demo@example.com"
 CLAVE = "demo-emiteboleta"
 
-# (días atrás, cliente, rut, [(descripción, cantidad, precio)], pagada)
+# (días atrás, cliente, rut, [(descripción, cantidad, precio)], retención %, pagada)
 BOLETAS = [
-    (40, "Café El Puerto SpA", "76.123.456-0", [("Diseño de logotipo", 1, 180000)], True),
-    (33, "Panadería Doña Rosa", "", [("Diseño de carta de menú", 2, 45000)], True),
-    (20, "Constructora Andes Ltda.", "77.654.321-K", [("Señalética para obra", 6, 12000), ("Instalación", 1, 35000)], False),
-    (9, "Café El Puerto SpA", "76.123.456-0", [("Gestión de redes sociales (mes)", 1, 150000)], True),
-    (4, "Juan Pérez", "", [("Clase particular de diseño", Decimal("1.5"), 20000)], False),
-    (1, "Ferretería Los Aromos", "", [("Diseño de catálogo", 1, 220000), ("Ajustes adicionales", 2, 15000)], False),
+    (160, "Café El Puerto SpA", "76.123.456-0", [("Diseño de logotipo", 1, 180000)], "15.25", True),
+    (140, "Panadería Doña Rosa", "", [("Diseño de carta de menú", 2, 45000)], "0", True),
+    (118, "Constructora Andes Ltda.", "77.654.321-K", [("Señalética para obra", 6, 12000), ("Instalación", 1, 35000)], "15.25", True),
+    (95, "Juan Pérez", "", [("Clase particular de diseño", 4, 20000)], "0", True),
+    (75, "Café El Puerto SpA", "76.123.456-0", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
+    (52, "Ferretería Los Aromos", "", [("Fotografía de productos", 30, 4000)], "0", True),
+    (40, "Café El Puerto SpA", "76.123.456-0", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
+    (33, "Panadería Doña Rosa", "", [("Diseño de bolsas y etiquetas", 1, 95000)], "0", True),
+    (20, "Constructora Andes Ltda.", "77.654.321-K", [("Diseño de folleto de proyecto", 1, 210000)], "15.25", False),
+    (9, "Café El Puerto SpA", "76.123.456-0", [("Gestión de redes sociales (mes)", 1, 150000)], "15.25", True),
+    (4, "Juan Pérez", "", [("Clase particular de diseño", Decimal("1.5"), 20000)], "0", False),
+    (1, "Ferretería Los Aromos", "", [("Diseño de catálogo", 1, 220000), ("Ajustes adicionales", 2, 15000)], "0", False),
 ]
 
 
@@ -58,8 +64,11 @@ class Command(BaseCommand):
         perfil.save()
 
         hoy = timezone.localdate()
-        for dias, cliente, rut, items, pagada in BOLETAS:
-            boleta = Boleta(fecha=hoy - timedelta(days=dias), receptor_nombre=cliente, receptor_rut=rut)
+        for dias, cliente, rut, items, retencion, pagada in BOLETAS:
+            boleta = Boleta(
+                fecha=hoy - timedelta(days=dias), receptor_nombre=cliente, receptor_rut=rut,
+                retencion_pct=Decimal(retencion),
+            )
             boleta.emitir(perfil)
             for descripcion, cantidad, precio in items:
                 Item.objects.create(boleta=boleta, descripcion=descripcion, cantidad=cantidad, precio_unitario=precio)
