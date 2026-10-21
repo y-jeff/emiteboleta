@@ -222,7 +222,7 @@ def _sello(boleta):
         if not (boleta.pagada and doc.page == 1):
             return
         canvas.saveState()
-        canvas.translate(ANCHO - MARGEN - 40 * mm, ALTO - 62 * mm)
+        canvas.translate(ANCHO - MARGEN - 40 * mm, ALTO - 70 * mm)
         canvas.rotate(12)
         canvas.setStrokeColor(VERDE)
         canvas.setFillColor(VERDE)
