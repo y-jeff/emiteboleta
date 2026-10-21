@@ -5,7 +5,7 @@
 <div class="flex flex-wrap items-end justify-between gap-3">
   <div>
     <p class="text-sm text-slate-500">{{ hoy|mes_anio }}</p>
-    <h1 class="text-2xl font-bold tracking-tight">Hola{% if perfil.nombre %}, {{ perfil.nombre|truncatewords:2 }}{% endif %}</h1>
+    <h1 class="text-2xl font-bold tracking-tight">Hola{% if perfil.nombre %}, {{ perfil.primer_nombre }}{% endif %}</h1>
   </div>
   <a href="{% url 'boletas:crear' %}" class="hidden rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark sm:inline-block md:hidden">+ Nueva boleta</a>
 </div>

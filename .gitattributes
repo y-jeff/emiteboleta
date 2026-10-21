@@ -1,2 +1,10 @@
-# Auto detect text files and perform LF normalization
+# Normaliza finales de línea en el repositorio
 * text=auto
+
+# Scripts que corren en Linux (Render/Railway) siempre con LF
+*.sh text eol=lf
+Procfile text eol=lf
+
+# Binarios
+*.png binary
+*.pdf binary

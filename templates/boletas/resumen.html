@@ -58,7 +58,7 @@
         <span class="col-span-3 text-right text-xs text-slate-500 tabular md:col-span-1 md:text-sm">
           <span class="md:hidden">Retención </span>{{ mes.retencion|clp }}<span class="md:hidden"> · Líquido {{ mes.liquido|clp }}</span>
         </span>
-        <span class="hidden text-right text-sm tabular md:block">{{ mes.liquido|clp }}</span>
+        <span class="hidden text-right text-sm tabular md:block {% if not mes.cantidad %}text-slate-400{% endif %}">{{ mes.liquido|clp }}</span>
       </li>
     {% endfor %}
   </ul>

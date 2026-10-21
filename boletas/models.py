@@ -58,6 +58,10 @@ class PerfilEmisor(models.Model):
         return bool(self.nombre and self.rut)
 
     @property
+    def primer_nombre(self):
+        return self.nombre.split()[0] if self.nombre else ""
+
+    @property
     def tiene_logo(self):
         return bool(self.logo)
 

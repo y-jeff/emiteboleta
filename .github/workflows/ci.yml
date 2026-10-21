@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: emiteboleta
+          POSTGRES_PASSWORD: emiteboleta
+          POSTGRES_DB: emiteboleta
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DEBUG: "1"
+      DATABASE_URL: postgres://emiteboleta:emiteboleta@localhost:5432/emiteboleta
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Migraciones al día
+        run: python manage.py makemigrations --check --dry-run
+      - name: Tests (PostgreSQL)
+        run: python manage.py test
+
+  css:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: CSS compilado al día
+        run: |
+          curl -sSL -o tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.17/tailwindcss-linux-x64
+          chmod +x tailwindcss
+          ./tailwindcss -i static/src/app.css -o static/css/app.css --minify
+          git diff --exit-code static/css/app.css || (echo "::error::Recompila el CSS con Tailwind y haz commit" && exit 1)
