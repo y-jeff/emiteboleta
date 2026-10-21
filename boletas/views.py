@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 from .forms import BoletaForm, ItemFormSet, PerfilForm
 from .models import Boleta, PerfilEmisor
 from .pdf import generar_pdf
+from .reportes import exportar_csv, resumen_anual
 
 
 def perfil_requerido(vista):
@@ -71,6 +72,38 @@ def dashboard(request):
         "por_cobrar": por_cobrar,
         "recientes": recientes,
     })
+
+
+def _anio(request, hoy):
+    try:
+        return int(request.GET.get("anio", hoy.year))
+    except ValueError:
+        return hoy.year
+
+
+@login_required
+def resumen(request):
+    hoy = timezone.localdate()
+    anio = _anio(request, hoy)
+    boletas = request.user.boletas.filter(fecha__year=anio).prefetch_related("items")
+    meses, totales = resumen_anual(boletas)
+    anios = sorted({d.year for d in request.user.boletas.dates("fecha", "year")} | {hoy.year}, reverse=True)
+    return render(request, "boletas/resumen.html", {
+        "anio": anio,
+        "anios": anios,
+        "meses": meses,
+        "totales": totales,
+        "mes_actual": hoy.month if anio == hoy.year else None,
+    })
+
+
+@login_required
+def exportar(request):
+    anio = _anio(request, timezone.localdate())
+    boletas = request.user.boletas.filter(fecha__year=anio).order_by("fecha", "numero").prefetch_related("items")
+    respuesta = HttpResponse(exportar_csv(boletas), content_type="text/csv; charset=utf-8")
+    respuesta["Content-Disposition"] = f'attachment; filename="boletas-{anio}.csv"'
+    return respuesta
 
 
 @login_required
