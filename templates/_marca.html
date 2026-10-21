@@ -1,0 +1,4 @@
+{% load static %}<span class="flex items-center gap-2 font-extrabold tracking-tight">
+  <img src="{% static 'img/emblema.png' %}" alt="" class="{{ icono|default:'h-8 w-8' }} rounded-lg">
+  <span class="bg-gradient-to-r {% if oscuro %}from-sky-400 to-cyan-200{% else %}from-brand to-sky-500{% endif %} bg-clip-text text-transparent">emiteboleta</span>
+</span>
