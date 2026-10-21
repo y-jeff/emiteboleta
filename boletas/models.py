@@ -9,6 +9,7 @@ from django.utils import timezone
 from .rut import validar_rut
 
 COLORES = [
+    ("#2563eb", "Azul EmiteBoleta"),
     ("#1e3a8a", "Azul marino"),
     ("#0f766e", "Verde azulado"),
     ("#7c2d12", "Terracota"),

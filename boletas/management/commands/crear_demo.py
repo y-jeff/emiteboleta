@@ -34,9 +34,9 @@ def logo_demo():
     """Isotipo simple dibujado con Pillow, para no depender de archivos externos."""
     img = Image.new("RGBA", (400, 400), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    d.ellipse((0, 0, 400, 400), fill="#0f766e")
-    d.ellipse((90, 90, 310, 310), fill="#5eead4")
-    d.rectangle((200, 90, 310, 200), fill="#0f766e")
+    d.ellipse((0, 0, 400, 400), fill="#2563eb")
+    d.ellipse((90, 90, 310, 310), fill="#7dd3fc")
+    d.rectangle((200, 90, 310, 200), fill="#2563eb")
     buffer = BytesIO()
     img.save(buffer, "PNG")
     return buffer.getvalue()
@@ -67,7 +67,7 @@ class Command(BaseCommand):
         perfil.email = "camila@ejemplo.cl"
         perfil.telefono = "+56 9 8765 4321"
         perfil.datos_pago = "Banco Estado · Cuenta RUT\nN° 12345678"
-        perfil.color = "#0f766e"
+        perfil.color = "#2563eb"
         perfil.logo, perfil.logo_mime = logo_demo(), "image/png"
         perfil.save()
 

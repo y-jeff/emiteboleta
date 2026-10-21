@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de EmiteBoleta. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.6.0] — 2026-10-21
+
+### Agregado
+- Identidad visual basada en el logo oficial: emblema, íconos de la app (PWA, iOS y favicon) e imagen de vista previa para redes y GitHub.
+- Color «Azul EmiteBoleta» para el PDF, ahora el predeterminado.
+
+### Cambiado
+- Paleta de la interfaz: azul y celeste sobre azul noche y violeta, como el logo.
+- Portada con fondo degradado de ancho completo y marca «emiteboleta» con degradado.
+
 ## [0.5.0] — 2026-10-21
 
 ### Agregado
@@ -55,6 +65,7 @@ Todos los cambios relevantes de EmiteBoleta. El formato sigue [Keep a Changelog]
 - Validación de RUT chileno.
 - Configuración de deploy para Render y Railway.
 
+[0.6.0]: https://github.com/y-jeff/emiteboleta/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/y-jeff/emiteboleta/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/y-jeff/emiteboleta/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/y-jeff/emiteboleta/compare/v0.2.0...v0.3.0

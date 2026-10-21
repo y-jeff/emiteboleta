@@ -1,37 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Boletas de servicios en PDF desde tu celular{% endblock %}
+{% block main_clase %}{% endblock %}
 {% block content %}
-<div class="-mx-4 -my-6">
-  <header class="mx-auto flex max-w-5xl items-center justify-between px-4 py-5">
-    <span class="flex items-center gap-2 text-lg font-extrabold tracking-tight">
-      <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand text-sm text-white">E</span>
-      <span>Emite<span class="text-brand">Boleta</span></span>
-    </span>
-    <a href="{% url 'cuentas:login' %}" class="text-sm font-semibold text-slate-700 hover:text-brand">Ingresar</a>
+<div>
+<div class="relative overflow-hidden bg-gradient-to-br from-noche via-[#16205c] to-violeta text-white">
+  <div class="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-sky-500/20 blur-3xl"></div>
+  <div class="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
+  <header class="relative mx-auto flex max-w-5xl items-center justify-between px-4 py-5">
+    <span class="text-xl">{% include "_marca.html" with oscuro=True icono="h-9 w-9" %}</span>
+    <a href="{% url 'cuentas:login' %}" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 hover:text-white">Ingresar</a>
   </header>
 
-  <section class="mx-auto grid max-w-5xl items-center gap-10 px-4 pb-16 pt-6 md:grid-cols-2 md:pt-12">
+  <section class="relative mx-auto grid max-w-5xl items-center gap-12 px-4 pb-20 pt-6 md:grid-cols-2 md:pt-12">
     <div>
-      <p class="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-light px-3 py-1 text-xs font-semibold text-brand">
-        Gratis · Sin instalar nada · Desde el celular
+      <p class="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-sky-200 ring-1 ring-white/15">
+        Gratis · Código abierto · Desde el celular
       </p>
       <h1 class="text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
-        Cobra como profesional.<br><span class="text-brand">En 30 segundos.</span>
+        Cobra como profesional.<br><span class="bg-gradient-to-r from-sky-400 to-cyan-200 bg-clip-text text-transparent">En 30 segundos.</span>
       </h1>
-      <p class="mt-5 text-lg leading-relaxed text-slate-600">
+      <p class="mt-5 text-lg leading-relaxed text-slate-300">
         Crea boletas de servicios con tu logo, numeración automática y un PDF impecable para enviar por WhatsApp o email.
         Lleva el control de quién te pagó y quién no.
       </p>
       <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-        <a href="{% url 'cuentas:registro' %}" class="rounded-xl bg-brand px-6 py-3.5 text-center font-semibold text-white shadow-lg shadow-brand/25 hover:bg-brand-dark">Crear mi cuenta gratis</a>
-        <a href="{% url 'cuentas:login' %}" class="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-center font-semibold text-slate-700 hover:border-slate-400">Ya tengo cuenta</a>
+        <a href="{% url 'cuentas:registro' %}" class="rounded-xl bg-gradient-to-r from-brand to-sky-500 px-6 py-3.5 text-center font-semibold text-white shadow-lg shadow-sky-500/30 hover:from-brand-dark hover:to-sky-600">Crear mi cuenta gratis</a>
+        <a href="{% url 'cuentas:login' %}" class="rounded-xl border border-white/25 bg-white/5 px-6 py-3.5 text-center font-semibold text-white hover:bg-white/10">Ya tengo cuenta</a>
       </div>
     </div>
 
     {# Vista previa estilizada del PDF #}
-    <div class="relative mx-auto w-full max-w-sm">
-      <div class="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-blue-100 to-indigo-50"></div>
-      <div class="overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200">
+    <div class="relative isolate mx-auto w-full max-w-sm">
+      <div class="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-sky-400/30 to-violet-500/30 blur-sm"></div>
+      <div class="relative overflow-hidden rounded-2xl bg-white text-slate-900 shadow-2xl ring-1 ring-white/20">
         <div class="h-2 bg-brand"></div>
         <div class="p-6 text-[11px]">
           <div class="flex justify-between">
@@ -62,7 +63,9 @@
     </div>
   </section>
 
-  <section class="border-t border-slate-200 bg-white">
+</div>
+
+  <section class="bg-white">
     <div class="mx-auto grid max-w-5xl gap-8 px-4 py-14 sm:grid-cols-3">
       <div>
         <div class="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-brand-light text-brand">

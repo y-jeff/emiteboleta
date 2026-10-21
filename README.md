@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="static/icons/icon-192.png" width="72" alt="Logo de EmiteBoleta">
+<img src="docs/marca/logo.png" width="220" alt="Logo de EmiteBoleta">
 
 # EmiteBoleta
 
@@ -161,7 +161,7 @@ boletas/
   management/ Comando crear_demo
 templates/    Plantillas con Tailwind
 static/       CSS compilado, íconos PWA y manifest
-docs/         Guía de deploy gratis y capturas para este README
+docs/         Guía de deploy gratis, logo y capturas para este README
 ```
 
 ## Próximos pasos

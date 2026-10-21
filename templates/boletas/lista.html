@@ -10,9 +10,9 @@
   <input type="search" name="q" value="{{ q }}" placeholder="Buscar por cliente, RUT, N° o servicio"
          class="block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20">
   <div class="flex gap-2 text-sm font-medium">
-    <a href="?q={{ q|urlencode }}" class="rounded-full px-3.5 py-1.5 {% if not estado %}bg-slate-900 text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Todas</a>
-    <a href="?q={{ q|urlencode }}&estado=pendiente" class="rounded-full px-3.5 py-1.5 {% if estado == 'pendiente' %}bg-slate-900 text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Pendientes</a>
-    <a href="?q={{ q|urlencode }}&estado=pagada" class="rounded-full px-3.5 py-1.5 {% if estado == 'pagada' %}bg-slate-900 text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Pagadas</a>
+    <a href="?q={{ q|urlencode }}" class="rounded-full px-3.5 py-1.5 {% if not estado %}bg-noche text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Todas</a>
+    <a href="?q={{ q|urlencode }}&estado=pendiente" class="rounded-full px-3.5 py-1.5 {% if estado == 'pendiente' %}bg-noche text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Pendientes</a>
+    <a href="?q={{ q|urlencode }}&estado=pagada" class="rounded-full px-3.5 py-1.5 {% if estado == 'pagada' %}bg-noche text-white{% else %}bg-white text-slate-600 ring-1 ring-slate-200{% endif %}">Pagadas</a>
   </div>
   {% if estado %}<input type="hidden" name="estado" value="{{ estado }}">{% endif %}
 </form>
