@@ -128,6 +128,9 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "EmiteBoleta <no-responder@localhost>")
 
+# Página del SII donde se emiten las boletas de honorarios electrónicas.
+SII_EMITIR_BHE_URL = os.environ.get("SII_EMITIR_BHE_URL", "https://www.sii.cl/boleta_honorarios/emitir.htm")
+
 LOGIN_URL = "cuentas:login"
 LOGIN_REDIRECT_URL = "boletas:dashboard"
 LOGOUT_REDIRECT_URL = "home"

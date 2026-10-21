@@ -98,6 +98,8 @@ def _cabecera(boleta, logo, est):
         Spacer(1, 2 * mm),
         _p(f"Emitida el {fecha_larga(boleta.fecha)}", est["dato_der"]),
     ]
+    if boleta.folio_sii:
+        derecha.append(_p(f"Boleta de honorarios SII N° {boleta.folio_sii}", est["dato_der"]))
     tabla = Table([[izquierda, derecha]], colWidths=[UTIL * 0.58, UTIL * 0.42])
     tabla.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),

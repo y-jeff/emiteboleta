@@ -30,7 +30,7 @@ def resumen_anual(boletas):
 
 
 COLUMNAS = [
-    "N°", "Fecha", "Cliente", "RUT cliente", "Servicios", "Monto bruto",
+    "N°", "N° boleta SII", "Fecha", "Cliente", "RUT cliente", "Servicios", "Monto bruto",
     "Retención %", "Retención", "Líquido", "Estado", "Fecha de pago",
 ]
 
@@ -44,6 +44,7 @@ def exportar_csv(boletas):
     for b in boletas:
         escritor.writerow([
             b.numero,
+            b.folio_sii or "",
             b.fecha.strftime("%d-%m-%Y"),
             b.receptor_nombre,
             b.receptor_rut,

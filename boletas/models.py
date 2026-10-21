@@ -105,6 +105,11 @@ class Boleta(models.Model):
     notas = models.TextField("Notas", blank=True)
     retencion_pct = models.DecimalField("Retención (%)", max_digits=5, decimal_places=2, default=Decimal("0"))
     estado = models.CharField(max_length=10, choices=ESTADOS, default=PENDIENTE)
+    # La boleta de honorarios válida se emite en el SII; aquí solo se guarda su número.
+    folio_sii = models.PositiveIntegerField(
+        "N° de boleta SII", null=True, blank=True,
+        help_text="Número de la boleta de honorarios que emitiste en el SII por este cobro.",
+    )
     fecha_pago = models.DateField(null=True, blank=True)
 
     creada = models.DateTimeField(auto_now_add=True)
