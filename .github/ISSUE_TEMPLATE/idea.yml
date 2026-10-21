@@ -1,0 +1,15 @@
+name: Proponer una mejora
+description: Una idea para que EmiteBoleta sea más útil
+labels: [mejora]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: ¿Qué problema resuelve?
+      description: Cuéntanos la situación real en la que te serviría.
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Propuesta
