@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load boletas_extras %}
+{% block title %}Boleta N° {{ boleta.numero_fmt }}{% endblock %}
+{% block content %}
+<a href="{% url 'boletas:lista' %}" class="text-sm font-medium text-slate-500">&larr; Mis boletas</a>
+
+<div class="mt-3 flex flex-wrap items-start justify-between gap-3">
+  <div>
+    <p class="text-sm font-semibold text-brand">Boleta N° {{ boleta.numero_fmt }}</p>
+    <h1 class="text-2xl font-bold tracking-tight">{{ boleta.receptor_nombre }}</h1>
+    <p class="text-sm text-slate-500">Emitida el {{ boleta.fecha|date:"j \d\e F \d\e Y" }}</p>
+  </div>
+  {% if boleta.pagada %}
+    <span class="rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">
+      Pagada{% if boleta.fecha_pago %} · {{ boleta.fecha_pago|date:"d/m/Y" }}{% endif %}
+    </span>
+  {% else %}
+    <span class="rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700 ring-1 ring-amber-200">Pendiente de pago</span>
+  {% endif %}
+</div>
+
+{# Acciones principales: grandes y al alcance del pulgar #}
+<div class="mt-5 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+  <a href="{% url 'boletas:pdf' boleta.pk %}?descargar=1" class="col-span-2 flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-semibold text-white shadow-sm hover:bg-brand-dark sm:col-span-1">
+    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+    Descargar PDF
+  </a>
+  <a href="{% url 'boletas:pdf' boleta.pk %}" target="_blank" rel="noopener" class="flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700">Ver PDF</a>
+  <button type="button" id="compartir" hidden class="flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700">Compartir</button>
+  <form method="post" action="{% url 'boletas:estado' boleta.pk %}" class="contents">{% csrf_token %}
+    <button class="flex items-center justify-center rounded-xl border px-4 py-3 font-semibold {% if boleta.pagada %}border-slate-300 bg-white text-slate-700{% else %}border-emerald-600 bg-emerald-600 text-white{% endif %}">
+      {% if boleta.pagada %}Marcar pendiente{% else %}Marcar pagada{% endif %}
+    </button>
+  </form>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-3">
+  <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white lg:col-span-2">
+    <div class="divide-y divide-slate-100">
+      {% for item in boleta.items.all %}
+        <div class="flex justify-between gap-4 px-4 py-3">
+          <div class="min-w-0">
+            <p class="font-medium">{{ item.descripcion }}</p>
+            <p class="text-sm text-slate-500 tabular">{{ item.cantidad|cantidad }} × {{ item.precio_unitario|clp }}</p>
+          </div>
+          <p class="shrink-0 font-semibold tabular">{{ item.total|clp }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <dl class="space-y-1.5 border-t border-slate-200 bg-slate-50 px-4 py-4 text-sm">
+      <div class="flex justify-between"><dt class="text-slate-600">Subtotal</dt><dd class="tabular">{{ boleta.subtotal|clp }}</dd></div>
+      {% if boleta.retencion_pct %}
+        <div class="flex justify-between"><dt class="text-slate-600">Retención {{ boleta.retencion_pct|porcentaje }}</dt><dd class="tabular">-{{ boleta.retencion_monto|clp }}</dd></div>
+      {% endif %}
+      <div class="flex justify-between pt-1 text-lg font-bold"><dt>Total</dt><dd class="tabular">{{ boleta.total|clp }}</dd></div>
+    </dl>
+  </section>
+
+  <aside class="space-y-4 text-sm">
+    <div class="rounded-2xl border border-slate-200 bg-white p-4">
+      <h2 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Cliente</h2>
+      <p class="mt-1 font-semibold">{{ boleta.receptor_nombre }}</p>
+      {% if boleta.receptor_rut %}<p class="text-slate-600">RUT {{ boleta.receptor_rut }}</p>{% endif %}
+      {% if boleta.receptor_email %}<p class="text-slate-600"><a href="mailto:{{ boleta.receptor_email }}" class="underline">{{ boleta.receptor_email }}</a></p>{% endif %}
+      {% if boleta.receptor_direccion %}<p class="text-slate-600">{{ boleta.receptor_direccion }}</p>{% endif %}
+    </div>
+    {% if boleta.notas %}
+      <div class="rounded-2xl border border-slate-200 bg-white p-4">
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Notas</h2>
+        <p class="mt-1 whitespace-pre-line text-slate-700">{{ boleta.notas }}</p>
+      </div>
+    {% endif %}
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url 'boletas:editar' boleta.pk %}" class="rounded-lg bg-white px-3 py-2 font-medium ring-1 ring-slate-200">Editar</a>
+      <form method="post" action="{% url 'boletas:duplicar' boleta.pk %}">{% csrf_token %}
+        <button class="rounded-lg bg-white px-3 py-2 font-medium ring-1 ring-slate-200">Duplicar</button>
+      </form>
+      <form method="post" action="{% url 'boletas:eliminar' boleta.pk %}" onsubmit="return confirm('¿Eliminar la boleta N° {{ boleta.numero_fmt }}? Esta acción no se puede deshacer.')">{% csrf_token %}
+        <button class="rounded-lg bg-white px-3 py-2 font-medium text-red-600 ring-1 ring-slate-200">Eliminar</button>
+      </form>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // En celulares, compartir el PDF directo a WhatsApp/email con la hoja nativa del sistema.
+  (function () {
+    const boton = document.getElementById("compartir");
+    if (!navigator.canShare) return;
+    const nombre = "boleta-{{ boleta.numero_fmt }}.pdf";
+    const prueba = new File([""], nombre, { type: "application/pdf" });
+    if (!navigator.canShare({ files: [prueba] })) return;
+    boton.hidden = false;
+    boton.addEventListener("click", async () => {
+      boton.disabled = true;
+      try {
+        const resp = await fetch("{% url 'boletas:pdf' boleta.pk %}");
+        const archivo = new File([await resp.blob()], nombre, { type: "application/pdf" });
+        await navigator.share({ files: [archivo], title: "Boleta N° {{ boleta.numero_fmt }}" });
+      } catch (e) {
+        /* El usuario canceló o el navegador no lo permitió */
+      } finally {
+        boton.disabled = false;
+      }
+    });
+  })();
+</script>
+{% endblock %}
