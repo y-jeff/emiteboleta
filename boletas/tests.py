@@ -3,6 +3,7 @@ from decimal import Decimal
 from io import BytesIO
 
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -296,3 +297,17 @@ class CuentasTests(TestCase):
             "email": "ANA@ejemplo.cl", "password1": "una-clave-larga-99", "password2": "una-clave-larga-99",
         })
         self.assertContains(respuesta, "Ya existe una cuenta")
+
+    def test_recuperar_clave(self):
+        crear_usuario("ana@ejemplo.cl")
+        respuesta = self.client.post(reverse("cuentas:recuperar"), {"email": "ana@ejemplo.cl"})
+        self.assertRedirects(respuesta, reverse("cuentas:recuperar_enviado"))
+        self.assertEqual(len(mail.outbox), 1)
+        enlace = next(linea for linea in mail.outbox[0].body.splitlines() if "/recuperar/" in linea)
+        formulario = self.client.get(enlace.replace("http://testserver", ""), follow=True)
+        self.assertTrue(formulario.context["validlink"])
+        respuesta = self.client.post(formulario.redirect_chain[-1][0], {
+            "new_password1": "otra-clave-larga-77", "new_password2": "otra-clave-larga-77",
+        })
+        self.assertRedirects(respuesta, reverse("cuentas:recuperar_listo"))
+        self.assertTrue(self.client.login(username="ana@ejemplo.cl", password="otra-clave-larga-77"))

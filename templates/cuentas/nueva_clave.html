@@ -1,0 +1,6 @@
+{% extends "cuentas/_auth.html" %}
+{% block title %}Nueva clave{% endblock %}
+{% block heading %}{% if validlink %}Crea tu nueva clave{% else %}Enlace no válido{% endif %}{% endblock %}
+{% block subheading %}{% if not validlink %}El enlace ya se usó o expiró. Pide uno nuevo.{% endif %}{% endblock %}
+{% block boton %}Guardar clave{% endblock %}
+{% block alternativa %}{% if not validlink %}<a href="{% url 'cuentas:recuperar' %}" class="font-semibold text-brand">Pedir un nuevo enlace</a>{% endif %}{% endblock %}
