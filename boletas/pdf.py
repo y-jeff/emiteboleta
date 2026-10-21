@@ -237,7 +237,7 @@ def _sello(boleta):
 
 def generar_pdf(boleta, perfil=None):
     """Devuelve los bytes del PDF de la boleta."""
-    acento = colors.HexColor(perfil.color if perfil else "#1e3a8a")
+    acento = colors.HexColor(perfil.color if perfil else "#2563eb")
     logo = bytes(perfil.logo) if perfil and perfil.logo else None
     est = _estilos(acento)
 
